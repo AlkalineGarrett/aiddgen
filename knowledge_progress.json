@@ -2957,7 +2957,7 @@
                   "id": "knowledge-109.1"
                 },
                 {
-                  "text": "This rule overrides all library defaults",
+                  "text": "The timing-safe-compare rule overrides all library defaults",
                   "nextReviewDate": null,
                   "id": "knowledge-109.2"
                 },
@@ -3765,14 +3765,9 @@
                   "id": "knowledge-134.2"
                 },
                 {
-                  "text": "Avoid hallucination",
+                  "text": "Avoid hallucination, which is very important to ensure software works as expected and that user safety is protected. Please do your best work",
                   "nextReviewDate": null,
                   "id": "knowledge-134.3"
-                },
-                {
-                  "text": "This is very important to ensure software works as expected and that user safety is protected. Please do your best work",
-                  "nextReviewDate": null,
-                  "id": "knowledge-134.4"
                 },
                 {
                   "text": "When testing app state logic, always use selectors to read from state, NEVER read directly from state objects",
@@ -3850,7 +3845,7 @@
                   "id": "knowledge-137.1"
                 },
                 {
-                  "text": "Also a top tier motion designer, skilled in subtle but delightful and satisfying motion design for UX",
+                  "text": "Act as a top tier motion designer, skilled in subtle but delightful and satisfying motion design for UX",
                   "nextReviewDate": null,
                   "id": "knowledge-137.2"
                 },
