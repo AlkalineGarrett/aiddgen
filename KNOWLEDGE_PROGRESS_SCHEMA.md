@@ -18,6 +18,8 @@ Each node in the knowledge tree contains:
   - **id**: A unique identifier for the knowledge bit. See ID Assignment Rules section for format details.
   - **text**: A string representing the testable knowledge that the user should understand about this domain.
   - **nextReviewDate**: An ISO 8601 date string (YYYY-MM-DD) or `null` indicating when the user should be asked about this specific knowledge bit again to test their knowledge retention. `null` means no review is scheduled.
+  - **derivedFrom**: (Optional) An array of knowledge bit IDs that this knowledge bit was derived from. This field is used when a general principle or cross-cutting concept is identified across multiple specific knowledge bits. The derived knowledge bit captures the general pattern, while the `derivedFrom` field tracks which specific knowledge bits contributed to this generalization. See [Derived Knowledge Bits Examples](./DERIVED_KNOWLEDGE_EXAMPLES.md) for detailed examples of good and bad derived knowledge bits.
+  - **specialType**: (Optional) A string indicating a special type of knowledge bit. Currently supported value is `"derived"`, which must be present when the `derivedFrom` field is present. This field helps identify knowledge bits that were derived from other knowledge bits.
 
 - **fileSegments**: An array of file segments that apply to this node. Each file segment contains:
   - **filename**: The path to the file relative to the project root
@@ -50,52 +52,65 @@ Each node in the knowledge tree contains:
   "children": [
     {
       "id": "node-2",
-      "name": "AIDD commands",
+      "name": "AIDD log rule",
       "knowledgeBits": [
         {
           "id": "knowledge-2.1",
-          "text": "Commands are user-invokable actions that trigger specific workflows in AIDD",
+          "text": "Guide for logging changes to activity-log.md",
           "nextReviewDate": null
         }
       ],
-      "fileSegments": [],
+      "fileSegments": [
+        {
+          "filename": "ai/rules/log.mdc",
+          "lineRange": null
+        }
+      ],
       "children": [
         {
           "id": "node-3",
-          "name": "AIDD commit command",
+          "name": "AIDD log rule: constraints",
           "knowledgeBits": [
             {
               "id": "knowledge-3.1",
-              "text": "Commits changes to the repository using conventional commit format",
+              "text": "Always use reverse chronological order",
               "nextReviewDate": null
+            },
+            {
+              "id": "knowledge-3.2",
+              "text": "Keep descriptions brief (< 50 chars)",
+              "nextReviewDate": null
+            },
+            {
+              "id": "knowledge-3.3",
+              "text": "Focus on epic-level accomplishments, not implementation details",
+              "nextReviewDate": null
+            },
+            {
+              "id": "knowledge-3.4",
+              "text": "Never log meta-work or trivial changes",
+              "nextReviewDate": null
+            },
+            {
+              "id": "knowledge-3.5",
+              "text": "Omit the 'epic' from the description",
+              "nextReviewDate": null
+            },
+            {
+              "id": "knowledge-3.6",
+              "text": "Change logs for epics should be concise and describe high-level accomplishments",
+              "nextReviewDate": null,
+              "derivedFrom": ["knowledge-3.2", "knowledge-3.3"],
+              "specialType": "derived"
             }
           ],
           "fileSegments": [
             {
-              "filename": "ai/commands/commit.md",
-              "lineRange": null
-            }
-          ],
-          "children": [
-            {
-              "id": "node-4",
-              "name": "AIDD commit command: purpose",
-              "knowledgeBits": [
-                {
-                  "id": "knowledge-4.1",
-                  "text": "Commits changes to the repository in non-interactive modes only",
-                  "nextReviewDate": null
-                }
-              ],
-              "fileSegments": [
-                {
-                  "filename": "ai/commands/commit.md",
-                  "lineRange": {
-                    "start": 1,
-                    "end": 3
-                  }
-                }
-              ]
+              "filename": "ai/rules/log.mdc",
+              "lineRange": {
+                "start": 47,
+                "end": 54
+              }
             }
           ]
         }
@@ -105,6 +120,8 @@ Each node in the knowledge tree contains:
 }
 ```
 
+**Note:** The derived knowledge bit (`knowledge-3.6`) in the example above demonstrates a meaningful reduction. See [Derived Knowledge Bits Examples](./DERIVED_KNOWLEDGE_EXAMPLES.md) for detailed explanation of why this is a good example.
+
 ## Principles
 
 - **Generality Principle**: Each node should capture content that applies to its level of generality. Higher-level nodes contain more general content, while lower-level nodes contain more specific content.
@@ -113,6 +130,7 @@ Each node in the knowledge tree contains:
 - **Context-Free Knowledge Bits**: Each knowledge bit must be context-free and self-contained. Knowledge bits cannot refer to other knowledge bits that occur before them. Avoid using pronouns (e.g., "this", "that", "it", "they") or connecting words (e.g., "also", "additionally", "furthermore") at the beginning of a knowledge bit when the referent is in a previous knowledge bit. If a knowledge bit references a concept from another knowledge bit, they should be combined into a single knowledge bit. Examples: "This is very important..." should be combined with the previous bit it references; "Also a top tier motion designer..." should be rewritten as "Act as a top tier motion designer..." to be self-contained.
 - **Hierarchy Principle**: If knowledge bits describe individual instances or specific items (e.g., individual commands, individual rules), those should be child nodes instead. Knowledge bits should capture general principles, concepts, or patterns that apply to the category as a whole, not enumerate specific items within that category.
 - **Context-Independent Naming**: All node names must be context-independent and fully qualified. Names should be unambiguous even when viewed outside the tree structure. Examples: "AIDD commands" (not "commands"), "AIDD commit command" (not "commit"), "AIDD commit command: purpose" (not "purpose"), "AIDD autodux rule" (not "autodux").
+- **Derived Knowledge Bits**: When analyzing leaf nodes (nodes with no children), general ideas, repeated concepts, or cross-cutting principles that appear across multiple knowledge bits should be extracted and added as new knowledge bits. These derived knowledge bits must be useful and contain concrete details specific to the node, while being more general than the individual knowledge bits they're derived from. They should include a `derivedFrom` field containing an array of the knowledge bit IDs that contributed to the generalization. See [Derived Knowledge Bits Examples](./DERIVED_KNOWLEDGE_EXAMPLES.md) for requirements, comprehensive examples, and detailed explanations.
 
 ## ID Assignment Rules
 

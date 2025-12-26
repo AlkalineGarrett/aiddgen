@@ -175,6 +175,18 @@
                   "text": "Do NOT add new things to the CHANGELOG.md file",
                   "nextReviewDate": null,
                   "id": "knowledge-6.5"
+                },
+                {
+                  "text": "Commit constraints contain best practices related to length, salience, and structure",
+                  "nextReviewDate": null,
+                  "derivedFrom": [
+                    "knowledge-6.1",
+                    "knowledge-6.2",
+                    "knowledge-6.3",
+                    "knowledge-6.4"
+                  ],
+                  "specialType": "derived",
+                  "id": "knowledge-6.6"
                 }
               ],
               "fileSegments": [
@@ -806,6 +818,17 @@
                   "text": "requirements: when writing functional requirements for a user story, use for functional requirement specification",
                   "nextReviewDate": null,
                   "id": "knowledge-32.11"
+                },
+                {
+                  "text": "Agent descriptions contain a context for application and a goal it helps achieve",
+                  "nextReviewDate": null,
+                  "derivedFrom": [
+                    "knowledge-32.1",
+                    "knowledge-32.2",
+                    "knowledge-32.3"
+                  ],
+                  "specialType": "derived",
+                  "id": "knowledge-32.13"
                 }
               ],
               "fileSegments": [
@@ -1895,6 +1918,18 @@
                   "text": "Omit the 'epic' from the description",
                   "nextReviewDate": null,
                   "id": "knowledge-64.5"
+                },
+                {
+                  "id": "knowledge-64.6",
+                  "text": "Change logs for epics should be concise and describe high-level accomplishments",
+                  "nextReviewDate": null,
+                  "derivedFrom": [
+                    "knowledge-64.2",
+                    "knowledge-64.3",
+                    "knowledge-64.4",
+                    "knowledge-64.5"
+                  ],
+                  "specialType": "derived"
                 }
               ],
               "fileSegments": [
@@ -3119,6 +3154,15 @@
                   "text": "NEVER change source code without clear requirements, tests, and/or manual user approval",
                   "nextReviewDate": null,
                   "id": "knowledge-114.4"
+                },
+                {
+                  "text": "Autodux dux objects are saved as .sudo files and transpiled to .js files",
+                  "nextReviewDate": null,
+                  "derivedFrom": [
+                    "knowledge-114.2"
+                  ],
+                  "specialType": "derived",
+                  "id": "knowledge-114.5"
                 }
               ],
               "fileSegments": [
