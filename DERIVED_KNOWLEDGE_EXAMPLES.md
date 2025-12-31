@@ -14,7 +14,7 @@ When creating derived knowledge bits, the following requirements must be met:
 
 - **Concrete Details Requirement**: Derived knowledge bits must include concrete, specific details about what makes them unique to that node, while being more general than the original bits. A cue that a derived knowledge bit is too vague is when it wording like "contains specific patterns"; the concrete instances would need to be called out to be sufficiently detailed.
 
-- **Meaningful Reduction Requirement**: Derived knowledge bits must represent a meaningful reduction, not just a more concise version of the key pieces. If a derived bit is essentially just restating the individual knowledge bits in a shorter form, it doesn't merit being a derived knowledge bit. A good derived knowledge bit captures the essential essence while omitting secondary characteristics and implied details.
+- **Meaningful Reduction Requirement**: Derived knowledge bits must represent a meaningful reduction, not just a more concise version of the key pieces. If a derived bit is essentially just restating the individual knowledge bits in a shorter form, it doesn't merit being a derived knowledge bit. A good derived knowledge bit captures the essential essence while omitting secondary characteristics and implied details. **Avoid lists**: Derived knowledge bits that enumerate items (e.g., "contains X, Y, and Z" or "includes A, B, C, and D") are typically just concise summaries rather than meaningful reductions. Instead, capture the underlying pattern or principle that connects these items.
 
 - **Uniqueness Requirement**: If derived information is exactly the same between two different nodes, it is too general and doesn't provide useful information. Each derived knowledge bit should capture something unique to its node's context. If a pattern appears identical across multiple nodes, it should either be removed or made more specific to each node's unique characteristics.
 
@@ -95,6 +95,30 @@ Don't create a derived knowledge bit because there's not very much information t
 
 **What to do instead:**
 Don't create a derived knowledge bit because there's no meaningful generalization to extract.
+
+### Node: AIDD autodux rule: concepts
+
+**Original Knowledge Bits:**
+- `knowledge-38.1`: "ActionObject has type property in format $slice/$actionName and payload property of type Any"
+- `knowledge-38.2`: "ActionCreator is function (payload = {}) => ActionObject, with constraints: for ids/timestamps/non-deterministic values generate default in parameter position not function body, always use arrow functions and avoid return keyword, always default payload to empty object, always use ActionObject type and type template, define action types inline not as constants"
+- `knowledge-38.4`: "Selector is function wholeState => selectedState, must select using slice variable e.g. state[slice].*, when testing use withSlice to wrap returned reducer so selectors work correctly"
+- `knowledge-38.5`: "reducer is function (state = initialState, { type, payload } = {}) => state, must use actionCreator().type instead of literal string values to build cases"
+- `knowledge-38.6`: "mapStateToProps is React-Redux connection helper"
+- `knowledge-38.7`: "mapDispatchToProps must use object literal form instead of function form"
+
+#### Bad Derived Knowledge Bit
+
+```
+"Autodux concepts define Redux patterns: ActionObjects with type/payload format, ActionCreators with constraints, reducers using actionCreator().type, selectors using slice variable, and React-Redux connection helpers"
+```
+
+**Why this is bad:**
+- ❌ Contains a list enumerating the different concepts instead of capturing a unifying pattern
+- ❌ Just a more concise summary of the individual knowledge bits
+- ❌ Doesn't represent a meaningful reduction - it's essentially restating each concept in list form
+
+**What to do instead:**
+Don't create a derived knowledge bit because the information doesn't reduce to a meaningful pattern or principle that connects these concepts.
 
 ### Node: AIDD agent orchestrator rule: agents
 
@@ -234,6 +258,32 @@ Don't create a derived knowledge bit because there's no meaningful generalizatio
 
 **Why this is bad:**
 - ❌ Doesn't represent a meaningful reduction - essentially just removes the specific file naming pattern (${slice name}-dux) and the "Build" instruction
+
+**What to do instead:**
+Don't create a derived knowledge bit.
+
+### Node: AIDD javascript-io-network-effects rule: call function
+
+**Original Knowledge Bits:**
+- `knowledge-56.3`: "A saga never calls the effect function returned from a call function invocation, instead a saga yields the effect object"
+- `knowledge-56.4`: "Yielding effect object allows saga to behave deterministically with no side-effects, enabling testing and debugging without running side effects"
+- `knowledge-56.5`: "Can pass any result or error back into saga to test various branches without mocking integrated components"
+
+#### Bad Derived Knowledge Bit
+
+```json
+{
+  "id": "knowledge-56.6",
+  "text": "call function yields effect objects instead of executing side effects, enabling deterministic testing and debugging without running actual side effects",
+  "nextReviewDate": null,
+  "derivedFrom": ["knowledge-56.3", "knowledge-56.4", "knowledge-56.5"]
+}
+```
+
+**Why this is bad:**
+- ❌ Just a restatement of knowledge-56.4 with a couple clarifying words ("call function" and "actual")
+- ❌ Doesn't represent a meaningful reduction - essentially the same information as knowledge-56.4, just from a slightly different perspective
+- ❌ Not a true generalization across multiple knowledge bits, just a rewording of one
 
 **What to do instead:**
 Don't create a derived knowledge bit.

@@ -127,10 +127,27 @@ Each node in the knowledge tree contains:
 - **Generality Principle**: Each node should capture content that applies to its level of generality. Higher-level nodes contain more general content, while lower-level nodes contain more specific content.
 - **Content Alignment**: File segments in a node should relate to concepts at that node's level of abstraction, not concepts that are more specific (which belong in child nodes) or more general (which belong in parent nodes).
 - **Knowledge Bits**: Each node should have knowledge bits that represent testable knowledge at that node's level of generality. Knowledge bits should be concise statements that can be used to test understanding.
-- **Context-Free Knowledge Bits**: Each knowledge bit must be context-free and self-contained. Knowledge bits cannot refer to other knowledge bits that occur before them. Avoid using pronouns (e.g., "this", "that", "it", "they") or connecting words (e.g., "also", "additionally", "furthermore") at the beginning of a knowledge bit when the referent is in a previous knowledge bit. If a knowledge bit references a concept from another knowledge bit, they should be combined into a single knowledge bit. Examples: "This is very important..." should be combined with the previous bit it references; "Also a top tier motion designer..." should be rewritten as "Act as a top tier motion designer..." to be self-contained.
+- **Context-Free Knowledge Bits**: Each knowledge bit must be context-free and self-contained. Knowledge bits cannot refer to other knowledge bits that occur before them.
+  
+  **What to avoid:**
+  - Pronouns (e.g., "this", "that", "it", "they") at the beginning when the referent is in a previous knowledge bit
+  - Connecting words (e.g., "also", "additionally", "furthermore") at the beginning when the referent is in a previous knowledge bit
+  - Passive voice constructions that omit the subject (e.g., "Used to make network requests..." should be "call function is used to make network requests...")
+  - Nouns without articles when they're not proper nouns (e.g., "Saga never calls..." should be "A saga never calls...")
+  - Definite articles ("the") that reference context without sufficient specification (e.g., "the effect function" should be "the effect function returned from a call function invocation" to make it context-free)
+  
+  **What to do:**
+  - If a knowledge bit references a concept from another knowledge bit, combine them into a single knowledge bit
+  - Explicitly state the subject of the sentence (e.g., "call function is used to..." not "Used to...")
+  
+  **Examples:**
+  - ❌ "This is very important..." → Should be combined with the previous bit it references
+  - ❌ "Also a top tier motion designer..." → ✅ "Act as a top tier motion designer..." (self-contained)
+  - ❌ "Used to make network requests..." → ✅ "call function is used to make network requests..." (explicitly states what is being used)
+  - ❌ "Saga itself never calls the effect function, instead it yields the effect object" → ✅ "A saga never calls the effect function returned from a call function invocation, instead a saga yields the effect object" (uses indefinite article for general concept, specifies what "the effect function" refers to, avoids pronoun "it")
 - **Hierarchy Principle**: If knowledge bits describe individual instances or specific items (e.g., individual commands, individual rules), those should be child nodes instead. Knowledge bits should capture general principles, concepts, or patterns that apply to the category as a whole, not enumerate specific items within that category.
 - **Context-Independent Naming**: All node names must be context-independent and fully qualified. Names should be unambiguous even when viewed outside the tree structure. Examples: "AIDD commands" (not "commands"), "AIDD commit command" (not "commit"), "AIDD commit command: purpose" (not "purpose"), "AIDD autodux rule" (not "autodux").
-- **Derived Knowledge Bits**: When analyzing leaf nodes (nodes with no children), general ideas, repeated concepts, or cross-cutting principles that appear across multiple knowledge bits should be extracted and added as new knowledge bits. These derived knowledge bits must be useful and contain concrete details specific to the node, while being more general than the individual knowledge bits they're derived from. They should include a `derivedFrom` field containing an array of the knowledge bit IDs that contributed to the generalization. See [Derived Knowledge Bits Examples](./DERIVED_KNOWLEDGE_EXAMPLES.md) for requirements, comprehensive examples, and detailed explanations.
+- **Derived Knowledge Bits**: When analyzing leaf nodes (nodes with no children), general ideas, repeated concepts, or cross-cutting principles that appear across multiple knowledge bits should be extracted and added as new knowledge bits. These derived knowledge bits must be useful and contain concrete details specific to the node, while being more general than the individual knowledge bits they're derived from. They should include a `derivedFrom` field containing an array of the knowledge bit IDs that contributed to the generalization. Derived knowledge bits must represent a meaningful reduction, not just a restatement of a single knowledge bit with slightly different wording. See [Derived Knowledge Bits Examples](./DERIVED_KNOWLEDGE_EXAMPLES.md) for requirements, comprehensive examples, and detailed explanations.
 
 ## ID Assignment Rules
 

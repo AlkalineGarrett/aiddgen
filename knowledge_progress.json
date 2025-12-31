@@ -1681,12 +1681,12 @@
                   "id": "knowledge-56.1"
                 },
                 {
-                  "text": "Used to make network requests or invoke other side effects",
+                  "text": "call function is used to make network requests or invoke other side effects",
                   "nextReviewDate": null,
                   "id": "knowledge-56.2"
                 },
                 {
-                  "text": "Saga itself never calls the effect function, instead it yields the effect object",
+                  "text": "A saga never calls the effect function returned from a call function invocation, instead a saga yields the effect object",
                   "nextReviewDate": null,
                   "id": "knowledge-56.3"
                 },
@@ -1721,7 +1721,7 @@
                   "id": "knowledge-57.1"
                 },
                 {
-                  "text": "Used to dispatch an action to the store to update the state",
+                  "text": "put function is used to dispatch an action to the store to update the state",
                   "nextReviewDate": null,
                   "id": "knowledge-57.2"
                 }
@@ -3154,15 +3154,6 @@
                   "text": "NEVER change source code without clear requirements, tests, and/or manual user approval",
                   "nextReviewDate": null,
                   "id": "knowledge-114.4"
-                },
-                {
-                  "text": "Autodux dux objects are saved as .sudo files and transpiled to .js files",
-                  "nextReviewDate": null,
-                  "derivedFrom": [
-                    "knowledge-114.2"
-                  ],
-                  "specialType": "derived",
-                  "id": "knowledge-114.5"
                 }
               ],
               "fileSegments": [
