@@ -1,24 +1,24 @@
-# Derived Knowledge Bits Examples
+# Derived Summaries
 
-This document provides examples of good and bad derived knowledge bits to guide the creation of meaningful generalizations from specific knowledge bits.
+This document provides examples of good and bad summary knowledge bits to guide the creation of meaningful generalizations from specific knowledge bits.
 
-## What are Derived Knowledge Bits?
+## What are Summary Knowledge Bits?
 
-Derived knowledge bits are generalizations extracted from multiple specific knowledge bits in a leaf node. They capture the essential essence of related knowledge bits while being more general than the originals. They must include a `derivedFrom` field containing an array of the knowledge bit IDs that contributed to the generalization.
+Summary knowledge bits are generalizations extracted from multiple specific knowledge bits in a leaf node. They capture the essential essence of related knowledge bits while being more general than the originals. They must include a `derivedFrom` field containing an array of the knowledge bit IDs that contributed to the generalization, and have `specialType: "summary"`.
 
 ## Requirements
 
-When creating derived knowledge bits, the following requirements must be met:
+When creating summary knowledge bits, the following requirements must be met:
 
-- **Usefulness Requirement**: Derived knowledge bits must provide meaningful information. Generic statements that could apply to any rule-based system are not useful.
+- **Usefulness Requirement**: Summary knowledge bits must provide meaningful information. Generic statements that could apply to any rule-based system are not useful.
 
-- **Concrete Details Requirement**: Derived knowledge bits must include concrete, specific details about what makes them unique to that node, while being more general than the original bits. A cue that a derived knowledge bit is too vague is when it wording like "contains specific patterns"; the concrete instances would need to be called out to be sufficiently detailed.
+- **Concrete Details Requirement**: Summary knowledge bits must include concrete, specific details about what makes them unique to that node, while being more general than the original bits. A cue that a summary knowledge bit is too vague is when it wording like "contains specific patterns"; the concrete instances would need to be called out to be sufficiently detailed.
 
-- **Meaningful Reduction Requirement**: Derived knowledge bits must represent a meaningful reduction, not just a more concise version of the key pieces. If a derived bit is essentially just restating the individual knowledge bits in a shorter form, it doesn't merit being a derived knowledge bit. A good derived knowledge bit captures the essential essence while omitting secondary characteristics and implied details. **Avoid lists**: Derived knowledge bits that enumerate items (e.g., "contains X, Y, and Z" or "includes A, B, C, and D") are typically just concise summaries rather than meaningful reductions. Instead, capture the underlying pattern or principle that connects these items.
+- **Meaningful Reduction Requirement**: Summary knowledge bits must represent a meaningful reduction, not just a more concise version of the key pieces. If a summary bit is essentially just restating the individual knowledge bits in a shorter form, it doesn't merit being a summary knowledge bit. A good summary knowledge bit captures the essential essence while omitting secondary characteristics and implied details. **Avoid lists**: Summary knowledge bits that enumerate items (e.g., "contains X, Y, and Z" or "includes A, B, C, and D") are typically just concise summaries rather than meaningful reductions. Instead, capture the underlying pattern or principle that connects these items.
 
-- **Uniqueness Requirement**: If derived information is exactly the same between two different nodes, it is too general and doesn't provide useful information. Each derived knowledge bit should capture something unique to its node's context. If a pattern appears identical across multiple nodes, it should either be removed or made more specific to each node's unique characteristics.
+- **Uniqueness Requirement**: If summary information is exactly the same between two different nodes, it is too general and doesn't provide useful information. Each summary knowledge bit should capture something unique to its node's context. If a pattern appears identical across multiple nodes, it should either be removed or made more specific to each node's unique characteristics.
 
-- **Context-Free Requirement**: Derived knowledge bits must also follow the Context-Free Knowledge Bits principle - they must be self-contained and not reference other knowledge bits.
+- **Context-Free Requirement**: Summary knowledge bits must also follow the Context-Free Knowledge Bits principle - they must be self-contained and not reference other knowledge bits.
 
 ## Examples by Node
 
@@ -31,14 +31,15 @@ When creating derived knowledge bits, the following requirements must be met:
 - `knowledge-6.4`: "Use conventional commits with the supplied template"
 - `knowledge-6.5`: "Do NOT add new things to the CHANGELOG.md file"
 
-#### Good Derived Knowledge Bit
+#### Good Summary Knowledge Bit
 
 ```json
 {
   "id": "knowledge-6.6",
   "text": "Commit constraints contain best practices related to length, salience, and structure",
   "nextReviewDate": null,
-  "derivedFrom": ["knowledge-6.1", "knowledge-6.2", "knowledge-6.3", "knowledge-6.4"]
+  "derivedFrom": ["knowledge-6.1", "knowledge-6.2", "knowledge-6.3", "knowledge-6.4"],
+  "specialType": "summary"
 }
 ```
 
@@ -63,7 +64,7 @@ When creating derived knowledge bits, the following requirements must be met:
 - `knowledge-9.1`: "Begin by reading the file and asking the user relevant questions to spark the discovery process"
 - `knowledge-9.2`: "Before beginning, read and respect the constraints in please.mdc"
 
-#### Bad Derived Knowledge Bit
+#### Bad Summary Knowledge Bit
 
 ```
 "Command execution requires: asking user questions, reading constraints from please.mdc"
@@ -75,7 +76,7 @@ When creating derived knowledge bits, the following requirements must be met:
 - ❌ Essentially restates the individual knowledge bits in shorter form
 
 **What to do instead:**
-Don't create a derived knowledge bit because there's not very much information to start with, so a derived bit isn't helpful.
+Don't create a summary knowledge bit because there's not very much information to start with, so a summary bit isn't helpful.
 
 ### Node: AIDD agent orchestrator rule: task prompt
 
@@ -83,7 +84,7 @@ Don't create a derived knowledge bit because there's not very much information t
 - `knowledge-33.1`: "taskPrompt format: # Guides section listing guide file refs in markdown format, followed by # User Prompt section with the user's prompt"
 - `knowledge-33.2`: "taskPrompt structure: Read each of the following guides for important context, and follow their instructions carefully: ${list guide file refs in markdown format}, then include # User Prompt with ${prompt}"
 
-#### Bad Derived Knowledge Bit
+#### Bad Summary Knowledge Bit
 
 ```
 "Task prompts structure guides and user prompts in markdown format with specific section headers"
@@ -94,7 +95,7 @@ Don't create a derived knowledge bit because there's not very much information t
 - ❌ Doesn't tell you what the section headers actually are
 
 **What to do instead:**
-Don't create a derived knowledge bit because there's no meaningful generalization to extract.
+Don't create a summary knowledge bit because there's no meaningful generalization to extract.
 
 ### Node: AIDD autodux rule: concepts
 
@@ -106,7 +107,7 @@ Don't create a derived knowledge bit because there's no meaningful generalizatio
 - `knowledge-38.6`: "mapStateToProps is React-Redux connection helper"
 - `knowledge-38.7`: "mapDispatchToProps must use object literal form instead of function form"
 
-#### Bad Derived Knowledge Bit
+#### Bad Summary Knowledge Bit
 
 ```
 "Autodux concepts define Redux patterns: ActionObjects with type/payload format, ActionCreators with constraints, reducers using actionCreator().type, selectors using slice variable, and React-Redux connection helpers"
@@ -118,50 +119,7 @@ Don't create a derived knowledge bit because there's no meaningful generalizatio
 - ❌ Doesn't represent a meaningful reduction - it's essentially restating each concept in list form
 
 **What to do instead:**
-Don't create a derived knowledge bit because the information doesn't reduce to a meaningful pattern or principle that connects these concepts.
-
-### Node: AIDD agent orchestrator rule: agents
-
-**Original Knowledge Bits:**
-- `knowledge-32.1`: "please: when user says please, use for general assistance, logging, committing, and proofing tasks"
-- `knowledge-32.2`: "stack: when implementing NextJS + React/Redux + Shadcn UI features, use for tech stack guidance and best practices"
-- `knowledge-32.3`: "productmanager: when planning features, user stories, user journeys, or conducting product discovery, use for building specifications and user journey maps"
-- `knowledge-32.4`: "tdd: when implementing code changes, use for systematic test-driven development with proper test isolation"
-- `knowledge-32.5`: "javascript: when writing JavaScript or TypeScript code, use for JavaScript best practices and guidance"
-- `knowledge-32.6`: "log: when documenting changes, use for creating structured change logs with emoji categorization"
-- `knowledge-32.7`: "commit: when committing code, use for conventional commit format with proper message structure"
-- `knowledge-32.8`: "autodux: when building Redux state management, use for creating and transpiling Autodux dux objects"
-- `knowledge-32.9`: "javascript-io-network-effects: when making network requests or invoking side-effects, use for saga pattern implementation"
-- `knowledge-32.10`: "ui: when building user interfaces and user experiences, use for beautiful and friendly UI/UX design"
-- `knowledge-32.11`: "requirements: when writing functional requirements for a user story, use for functional requirement specification"
-
-#### Good Derived Knowledge Bit
-
-```json
-{
-  "id": "knowledge-32.13",
-  "text": "Agent descriptions contain a context for application and a goal it helps achieve",
-  "nextReviewDate": null,
-  "derivedFrom": ["knowledge-32.1", "knowledge-32.2", "knowledge-32.3"]
-}
-```
-
-**Why this is good:**
-- ✅ Captures a high-level pattern that is consistent among all of the knowledge bits
-- ✅ Represents a meaningful reduction that describes the structure of agent descriptions
-- ✅ Omits the specific agent names and details, focusing on the pattern
-
-#### Bad Example
-
-```
-"Available agents include: please (general assistance), stack (tech stack guidance), productmanager (product discovery), tdd (test-driven development), javascript (JavaScript best practices), log (change logs), commit (conventional commits), autodux (Redux state management), javascript-io-network-effects (saga patterns), ui (UI/UX design), and requirements (functional requirements)"
-```
-
-**Why this is bad:**
-- ❌ Enumerates specific agents instead of capturing a general pattern
-- ❌ Violates the Hierarchy Principle: individual agents should be child nodes, not listed in a knowledge bit
-- ❌ Too detailed and specific - doesn't provide a meaningful generalization
-- ❌ Essentially just restates all the individual knowledge bits in a list format
+Don't create a summary knowledge bit because the information doesn't reduce to a meaningful pattern or principle that connects these concepts.
 
 ### Node: AIDD log rule: constraints
 
@@ -172,14 +130,15 @@ Don't create a derived knowledge bit because the information doesn't reduce to a
 - `knowledge-64.4`: "Never log meta-work or trivial changes"
 - `knowledge-64.5`: "Omit the 'epic' from the description"
 
-#### Good Derived Knowledge Bit
+#### Good Summary Knowledge Bit
 
 ```json
 {
   "id": "knowledge-64.6",
   "text": "Change logs for epics should be concise and describe high-level accomplishments",
   "nextReviewDate": null,
-  "derivedFrom": ["knowledge-64.2", "knowledge-64.3", "knowledge-64.4", "knowledge-64.5"]
+  "derivedFrom": ["knowledge-64.2", "knowledge-64.3", "knowledge-64.4", "knowledge-64.5"],
+  "specialType": "summary"
 }
 ```
 
@@ -225,7 +184,8 @@ Don't create a derived knowledge bit because the information doesn't reduce to a
       "id": "knowledge-64.6",
       "text": "Change logs for epics should be concise and describe high-level accomplishments",
       "nextReviewDate": null,
-      "derivedFrom": ["knowledge-64.2", "knowledge-64.3", "knowledge-64.4", "knowledge-64.5"]
+      "derivedFrom": ["knowledge-64.2", "knowledge-64.3", "knowledge-64.4", "knowledge-64.5"],
+      "specialType": "summary"
     }
   ],
   "fileSegments": [
@@ -245,7 +205,7 @@ Don't create a derived knowledge bit because the information doesn't reduce to a
 **Original Knowledge Bits:**
 - `knowledge-114.2`: "Build the Autodux dux object and save it as ${slice name}-dux.sudo, then transpile to JavaScript and save it as ${slice name}-dux.js"
 
-#### Bad Derived Knowledge Bit
+#### Bad Summary Knowledge Bit
 
 ```json
 {
@@ -260,7 +220,7 @@ Don't create a derived knowledge bit because the information doesn't reduce to a
 - ❌ Doesn't represent a meaningful reduction - essentially just removes the specific file naming pattern (${slice name}-dux) and the "Build" instruction
 
 **What to do instead:**
-Don't create a derived knowledge bit.
+Don't create a summary knowledge bit.
 
 ### Node: AIDD javascript-io-network-effects rule: call function
 
@@ -269,7 +229,7 @@ Don't create a derived knowledge bit.
 - `knowledge-56.4`: "Yielding effect object allows saga to behave deterministically with no side-effects, enabling testing and debugging without running side effects"
 - `knowledge-56.5`: "Can pass any result or error back into saga to test various branches without mocking integrated components"
 
-#### Bad Derived Knowledge Bit
+#### Bad Summary Knowledge Bit
 
 ```json
 {
@@ -286,7 +246,7 @@ Don't create a derived knowledge bit.
 - ❌ Not a true generalization across multiple knowledge bits, just a rewording of one
 
 **What to do instead:**
-Don't create a derived knowledge bit.
+Don't create a summary knowledge bit.
 
 ## Key Principles Summary
 

@@ -18,8 +18,8 @@ Each node in the knowledge tree contains:
   - **id**: A unique identifier for the knowledge bit. See ID Assignment Rules section for format details.
   - **text**: A string representing the testable knowledge that the user should understand about this domain.
   - **nextReviewDate**: An ISO 8601 date string (YYYY-MM-DD) or `null` indicating when the user should be asked about this specific knowledge bit again to test their knowledge retention. `null` means no review is scheduled.
-  - **derivedFrom**: (Optional) An array of knowledge bit IDs that this knowledge bit was derived from. This field is used when a general principle or cross-cutting concept is identified across multiple specific knowledge bits. The derived knowledge bit captures the general pattern, while the `derivedFrom` field tracks which specific knowledge bits contributed to this generalization. See [Derived Knowledge Bits Examples](./DERIVED_KNOWLEDGE_EXAMPLES.md) for detailed examples of good and bad derived knowledge bits.
-  - **specialType**: (Optional) A string indicating a special type of knowledge bit. Currently supported value is `"derived"`, which must be present when the `derivedFrom` field is present. This field helps identify knowledge bits that were derived from other knowledge bits.
+  - **derivedFrom**: (Optional) An array of knowledge bit IDs that this knowledge bit was derived from. This field is used when a general principle or cross-cutting concept is identified across multiple specific knowledge bits. Knowledge bits with `derivedFrom` must also have a `specialType` field indicating whether they are a summary or pattern knowledge bit. See the Derived Knowledge Bits principle below for details on both types, and see [Derived Summaries](./DERIVED_SUMMARIES.md) and [Derived Patterns](./DERIVED_PATTERNS.md) for detailed examples.
+  - **specialType**: (Optional) A string indicating a special type of knowledge bit. Supported values are `"summary"` and `"pattern"`. This field must be present when the `derivedFrom` field is present. `"summary"` indicates knowledge bits that generalize the content of multiple source knowledge bits (see [Derived Summaries](./DERIVED_SUMMARIES.md)). `"pattern"` indicates knowledge bits that identify structural patterns, formats, or recurring relationships observed across multiple source knowledge bits (see [Derived Patterns](./DERIVED_PATTERNS.md)).
 
 - **fileSegments**: An array of file segments that apply to this node. Each file segment contains:
   - **filename**: The path to the file relative to the project root
@@ -101,7 +101,7 @@ Each node in the knowledge tree contains:
               "text": "Change logs for epics should be concise and describe high-level accomplishments",
               "nextReviewDate": null,
               "derivedFrom": ["knowledge-3.2", "knowledge-3.3"],
-              "specialType": "derived"
+              "specialType": "summary"
             }
           ],
           "fileSegments": [
@@ -120,7 +120,7 @@ Each node in the knowledge tree contains:
 }
 ```
 
-**Note:** The derived knowledge bit (`knowledge-3.6`) in the example above demonstrates a meaningful reduction. See [Derived Knowledge Bits Examples](./DERIVED_KNOWLEDGE_EXAMPLES.md) for detailed explanation of why this is a good example.
+**Note:** The summary knowledge bit (`knowledge-3.6`) in the example above demonstrates a meaningful reduction. See [Derived Summaries](./DERIVED_SUMMARIES.md) for detailed explanation of why this is a good example.
 
 ## Principles
 
@@ -147,7 +147,9 @@ Each node in the knowledge tree contains:
   - ❌ "Saga itself never calls the effect function, instead it yields the effect object" → ✅ "A saga never calls the effect function returned from a call function invocation, instead a saga yields the effect object" (uses indefinite article for general concept, specifies what "the effect function" refers to, avoids pronoun "it")
 - **Hierarchy Principle**: If knowledge bits describe individual instances or specific items (e.g., individual commands, individual rules), those should be child nodes instead. Knowledge bits should capture general principles, concepts, or patterns that apply to the category as a whole, not enumerate specific items within that category.
 - **Context-Independent Naming**: All node names must be context-independent and fully qualified. Names should be unambiguous even when viewed outside the tree structure. Examples: "AIDD commands" (not "commands"), "AIDD commit command" (not "commit"), "AIDD commit command: purpose" (not "purpose"), "AIDD autodux rule" (not "autodux").
-- **Derived Knowledge Bits**: When analyzing leaf nodes (nodes with no children), general ideas, repeated concepts, or cross-cutting principles that appear across multiple knowledge bits should be extracted and added as new knowledge bits. These derived knowledge bits must be useful and contain concrete details specific to the node, while being more general than the individual knowledge bits they're derived from. They should include a `derivedFrom` field containing an array of the knowledge bit IDs that contributed to the generalization. Derived knowledge bits must represent a meaningful reduction, not just a restatement of a single knowledge bit with slightly different wording. See [Derived Knowledge Bits Examples](./DERIVED_KNOWLEDGE_EXAMPLES.md) for requirements, comprehensive examples, and detailed explanations.
+- **Derived Knowledge Bits**: When analyzing leaf nodes (nodes with no children), general ideas, repeated concepts, or cross-cutting principles that appear across multiple knowledge bits should be extracted and added as new knowledge bits. These knowledge bits must be useful and contain concrete details specific to the node, while being more general than the individual knowledge bits they're derived from. They should include a `derivedFrom` field containing an array of the knowledge bit IDs that contributed to the generalization, and a `specialType` field indicating the type. Two types are supported:
+  - **Summary knowledge bits** (`specialType: "summary"`): Generalize the *content* of multiple knowledge bits - capturing common principles or ideas. They must represent a meaningful reduction, not just a restatement of a single knowledge bit with slightly different wording. See [Derived Summaries](./DERIVED_SUMMARIES.md) for requirements, comprehensive examples, and detailed explanations.
+  - **Pattern knowledge bits** (`specialType: "pattern"`): Identify structural patterns, formats, or recurring relationships observed across multiple knowledge bits - focusing on *how* the knowledge is structured rather than *what* it says. See [Derived Patterns](./DERIVED_PATTERNS.md) for requirements, examples, and detailed explanations.
 
 ## ID Assignment Rules
 

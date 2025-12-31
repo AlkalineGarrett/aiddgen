@@ -185,7 +185,7 @@
                     "knowledge-6.3",
                     "knowledge-6.4"
                   ],
-                  "specialType": "derived",
+                  "specialType": "summary",
                   "id": "knowledge-6.6"
                 }
               ],
@@ -827,7 +827,7 @@
                     "knowledge-32.2",
                     "knowledge-32.3"
                   ],
-                  "specialType": "derived",
+                  "specialType": "pattern",
                   "id": "knowledge-32.13"
                 }
               ],
@@ -1929,7 +1929,7 @@
                     "knowledge-64.4",
                     "knowledge-64.5"
                   ],
-                  "specialType": "derived"
+                  "specialType": "summary"
                 }
               ],
               "fileSegments": [
