@@ -1,0 +1,121 @@
+---
+description: Team context choice and its cascading implications
+---
+
+# Team Context
+
+Who works on this code determines how much context needs to be explicit. Solo developers can rely on memory; large teams need everything written down.
+
+## Options
+
+### 1. Solo Developer
+**Context**: One person, everything in their head.
+
+Implies:
+- Documentation: minimal, self-documenting code preferred
+- Code style: personal consistency
+- Communication: none needed
+- Review: self-review only
+- Knowledge: no bus factor concerns (or total bus factor)
+
+AI behaviors:
+- Don't suggest documentation unless complex
+- Follow whatever style exists in the code
+- Skip "consider what others might think"
+- No code review suggestions
+- Optimize for author's productivity
+- Suggest comments only for "future self" scenarios
+
+### 2. Small Team (2-5)
+**Context**: Few people, high bandwidth communication.
+
+Implies:
+- Documentation: for non-obvious decisions
+- Code style: team conventions emerge
+- Communication: can discuss synchronously
+- Review: lightweight, trust teammates
+- Knowledge: share through pairing/discussion
+
+AI behaviors:
+- Suggest brief comments for "why" not "what"
+- Follow existing patterns in codebase
+- Mention things worth discussing with team
+- Light review focus: correctness, clarity
+- Don't over-document
+
+### 3. Large Team (6+)
+**Context**: Many contributors, async communication needed.
+
+Implies:
+- Documentation: important for onboarding
+- Code style: enforced consistently
+- Communication: written, async
+- Review: thorough, checklist-based
+- Knowledge: must be in code/docs
+
+AI behaviors:
+- Suggest documentation for public interfaces
+- Enforce consistent style
+- Consider code discoverability
+- Thorough review suggestions
+- Flag unclear code that needs comments
+- Consider onboarding impact
+
+### 4. Open Source
+**Context**: Unknown contributors, public scrutiny.
+
+Implies:
+- Documentation: extensive, contributor-friendly
+- Code style: strict, documented
+- Communication: public, searchable
+- Review: thorough, educational
+- Knowledge: everything public and discoverable
+- Compatibility: breaking changes are major
+
+AI behaviors:
+- Comprehensive documentation suggestions
+- Strict adherence to style guide
+- Consider contribution guidelines
+- Explain "why" in commits
+- Strong backward compatibility warnings
+- Suggest changelog entries
+- Consider discoverability of APIs
+
+### 5. Contractor/Handoff
+**Context**: Code will be handed to others who lack context.
+
+Implies:
+- Documentation: extensive, assume no verbal transfer
+- Code style: explicit, nothing clever
+- Comments: explain decisions and context
+- Structure: conventional, discoverable
+- Gotchas: must be documented
+
+AI behaviors:
+- Extensive documentation suggestions
+- Prefer boring, obvious solutions
+- Document all decisions and tradeoffs
+- Avoid clever code
+- Suggest README and architecture docs
+- Document environment setup thoroughly
+- Warn about undocumented complexity
+
+## Team × Documentation Matrix
+
+| Context | Code Comments | README | Architecture Docs | API Docs |
+|---------|--------------|--------|-------------------|----------|
+| Solo | Future-self only | Setup notes | No | No |
+| Small Team | Why, not what | Setup + context | Key decisions | Informal |
+| Large Team | Public interfaces | Comprehensive | Yes | Yes |
+| Open Source | Extensive | Contributor guide | Public | Full |
+| Handoff | Everything | Complete | Thorough | Complete |
+
+## Code Style Implications
+
+| Context | Enforcement | Cleverness | Abstractions |
+|---------|-------------|------------|--------------|
+| Solo | Personal | Fine if remembered | Personal preference |
+| Small Team | Informal | Team should understand | Discuss first |
+| Large Team | Automated | Avoid | Must be obvious |
+| Open Source | Strict/automated | Never | Well-documented |
+| Handoff | Standard | Never | Only if documented |

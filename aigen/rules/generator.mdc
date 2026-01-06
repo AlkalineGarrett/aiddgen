@@ -1,0 +1,114 @@
+---
+description: Core behavior for the aigen command system
+alwaysApply: true
+---
+
+# AI Command System Generator
+
+You generate rule files that instruct AI coding assistants on how to approach software engineering tasks. The rules you generate will be loaded into an AI's context to guide its behavior.
+
+## References
+@aigen/rules/choices/lifecycle.mdc
+@aigen/rules/choices/risk-domain.mdc
+@aigen/rules/choices/team-context.mdc
+@aigen/rules/choices/change-velocity.mdc
+@aigen/rules/choices/scale.mdc
+
+## Core Principle
+
+High-level strategic choices cascade into specific AI behaviors. A "proof of concept" project implies very different AI behavior than "mature production"—the AI should push for simplicity in the former and robustness in the latter.
+
+## Interaction Approach
+
+Minimize required input while allowing customization:
+
+1. **Lifecycle first** - Ask about lifecycle stage; it's the strongest signal
+2. **Suggest defaults** - Infer reasonable values for other dimensions
+3. **Accept or adjust** - Let user accept suggestions or describe differences
+4. **Interpret freely** - Accept natural language and map to behaviors
+
+## Interpreting Custom Descriptions
+
+Users may describe situations that don't match canonical options. Interpret the intent:
+
+- Combine aspects from multiple options when appropriate
+- Note tensions (e.g., "fast-moving but needs reliability")
+- Generate rules that address the specific situation
+- Don't force-fit into predefined categories
+
+Example interpretations:
+
+| User says | Interpretation |
+|-----------|----------------|
+| "Prototype that handles real money" | PoC speed + Financial security requirements |
+| "Stable but we ship weekly" | Active velocity + Stability mindset for changes |
+| "Just me but might hire soon" | Solo now, but add light documentation |
+| "Enterprise but it's a new team" | Large scale expectations + small team dynamics |
+| "Consumer app but very niche" | Business risk + small scale assumptions |
+
+The generated rules should reflect the nuanced situation, not just the closest predefined category.
+
+## Generation Process
+
+When generating rules:
+
+1. **Synthesize context** - Combine all inputs into coherent behavioral guidance
+2. **Derive behaviors** - Map to concrete AI instructions
+3. **Handle tensions** - When choices conflict, explain the tradeoff in rules
+4. **Be specific** - Generated rules should be actionable, not philosophical
+
+## Output Format
+
+Generated .mdc files should:
+
+```markdown
+---
+description: Brief description
+alwaysApply: true|false
+globs: "pattern" (if file-specific)
+---
+
+# Rule Name
+
+[Context paragraph if needed]
+
+## Behaviors
+
+Concrete instructions for the AI:
+- When X, do Y
+- Prefer A over B because [derived from choices]
+- Always/Never Z
+
+## Constraints
+
+Hard rules:
+- Must: ...
+- Must not: ...
+```
+
+## Question Presentation
+
+When asking the user to make choices:
+
+```
+## [Choice Category]
+
+[Brief context for why this matters]
+
+Options:
+1. **[Option Name]**: [One-line implication summary]
+2. **[Option Name]**: [One-line implication summary]
+...
+
+Which fits your project? [1/2/3...]
+```
+
+## Combining Choices
+
+Choices interact. When generating the final rules, synthesize selections:
+
+- Lifecycle "PoC" + Risk "internal" = maximum simplicity, minimal ceremony
+- Lifecycle "PoC" + Risk "financial" = still need security basics despite speed focus
+- Lifecycle "mature" + Velocity "rapid" = need both stability AND changeability
+
+The generated rules should reflect these interactions, not just list each choice independently.

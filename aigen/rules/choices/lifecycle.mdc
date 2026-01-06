@@ -1,0 +1,152 @@
+---
+description: Lifecycle stage choice and its cascading implications
+---
+
+# Lifecycle Stage
+
+The project's lifecycle stage fundamentally shapes how the AI should approach every task. Early stages prioritize learning and speed; later stages prioritize stability and reliability.
+
+## Options
+
+### 1. Proof of Concept
+**Purpose**: Validate an idea quickly. Will likely be thrown away.
+
+Implies:
+- Maximize speed, minimize ceremony
+- Skip tests unless needed to understand behavior
+- Minimal error handling (fail fast, read the error)
+- No documentation beyond code comments
+- Hardcoded values acceptable
+- Ignore edge cases entirely
+- Security only if exploring auth concepts
+
+AI behaviors:
+- Suggest the simplest possible implementation
+- Push back on "what about X?" concerns
+- Don't suggest tests unless asked
+- Don't add error handling unless it blocks progress
+- Prefer inline code over abstractions
+
+### 2. Throwaway Tool
+**Purpose**: Solve an immediate problem for the author. Not meant to last.
+
+Implies:
+- Speed over maintainability
+- Author understands the code, no docs needed
+- Basic error handling (know when it fails)
+- Tests only for complex logic author can't verify by eye
+- Acceptable shortcuts and hacks
+
+AI behaviors:
+- Optimize for "does it work" not "is it clean"
+- Suggest quick solutions even if not elegant
+- Skip suggesting refactors
+- Minimal error messages (author will debug anyway)
+- Don't suggest adding types beyond what helps autocomplete
+
+### 3. Team Tool
+**Purpose**: Used by a small known group. Needs to be understandable by others.
+
+Implies:
+- Code should be readable by teammates
+- Basic documentation for non-obvious parts
+- Error messages that help users self-serve
+- Tests for core functionality
+- Reasonable input validation
+- Some structure, but pragmatic
+
+AI behaviors:
+- Suggest clear naming and structure
+- Add brief comments for non-obvious logic
+- Suggest tests for complex or critical paths
+- Include helpful error messages
+- Balance simplicity with clarity
+
+### 4. MVP
+**Purpose**: First version for real users. Validate with actual usage.
+
+Implies:
+- Must handle common error cases gracefully
+- User-facing errors must be helpful
+- Core happy path must be tested
+- Basic security (don't be obviously vulnerable)
+- Some documentation for deployment/operation
+- Technical debt acceptable if tracked
+
+AI behaviors:
+- Insist on error handling for user-facing paths
+- Suggest input validation
+- Recommend tests for critical user journeys
+- Flag obvious security issues
+- Accept "good enough" solutions with notes about future improvement
+
+### 5. Early Production
+**Purpose**: Real users depending on it. Growing and evolving.
+
+Implies:
+- Comprehensive error handling
+- Good test coverage
+- Security review for sensitive operations
+- Monitoring and logging considerations
+- Documentation for maintenance
+- Backward compatibility matters
+
+AI behaviors:
+- Suggest thorough error handling
+- Recommend tests for changes
+- Flag security implications
+- Consider failure modes
+- Suggest logging for debugging
+- Warn about breaking changes
+
+### 6. Mature Production
+**Purpose**: Stable, reliable, battle-tested. Many users depend on it.
+
+Implies:
+- High test coverage expected
+- Changes require careful consideration
+- Security is paramount
+- Performance matters
+- Comprehensive documentation
+- Backward compatibility critical
+- Observability built-in
+
+AI behaviors:
+- Insist on tests for all changes
+- Thorough security review
+- Consider performance implications
+- Suggest comprehensive error handling
+- Recommend documentation updates
+- Warn strongly about breaking changes
+- Consider rollback strategies
+
+### 7. Legacy
+**Purpose**: Old system that must be maintained but not actively developed.
+
+Implies:
+- Understand before changing
+- Preserve existing behavior unless explicitly changing
+- Add tests before modifying
+- Document discoveries
+- Minimize blast radius of changes
+- Watch for hidden dependencies
+
+AI behaviors:
+- Always read surrounding code first
+- Suggest adding tests before changes
+- Preserve existing patterns even if not ideal
+- Warn about potential side effects
+- Recommend small, isolated changes
+- Document gotchas discovered
+
+## Derived Behaviors Summary
+
+| Stage | Error Handling | Testing | Security | Docs | Refactoring |
+|-------|---------------|---------|----------|------|-------------|
+| PoC | Minimal | Skip | Skip | None | Never |
+| Throwaway | Basic | Rare | Basic | None | Never |
+| Team Tool | Reasonable | Core paths | Standard | Brief | If helpful |
+| MVP | User-facing | Critical paths | No obvious holes | Deploy | Tracked debt |
+| Early Prod | Comprehensive | Good coverage | Review | Maintain | Considered |
+| Mature | Thorough | High coverage | Paramount | Complete | Careful |
+| Legacy | Preserve | Add first | Audit | Discover | Minimal |

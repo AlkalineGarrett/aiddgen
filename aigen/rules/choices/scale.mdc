@@ -1,0 +1,159 @@
+---
+description: Scale expectations choice and its cascading implications
+---
+
+# Scale Expectations
+
+Expected scale affects architecture, performance considerations, and complexity tradeoffs. Over-engineering for scale you'll never reach is waste; under-engineering for scale you need is crisis.
+
+## Options
+
+### 1. Single User
+**Context**: Personal tool, one person using it.
+
+Implies:
+- Performance: doesn't matter unless noticeably slow
+- Concurrency: not a concern
+- Data: fits in memory, simple storage fine
+- Caching: unnecessary
+- Architecture: simplest possible
+
+AI behaviors:
+- Ignore scalability concerns
+- Suggest in-memory solutions
+- SQLite is fine
+- Skip caching suggestions
+- Avoid distributed system patterns
+- Optimize for simplicity, not performance
+- Don't suggest async unless needed for UX
+
+### 2. Small Group (< 100)
+**Context**: Team, family, small community.
+
+Implies:
+- Performance: should be responsive
+- Concurrency: minimal (maybe a few at once)
+- Data: single database instance fine
+- Caching: nice to have, not critical
+- Architecture: simple, maybe one server
+
+AI behaviors:
+- Basic performance awareness
+- Simple database queries fine
+- Consider basic indexing
+- Skip horizontal scaling discussions
+- Suggest simple hosting solutions
+- Async for long operations
+
+### 3. Organization (100-10K)
+**Context**: Company-wide, department, medium app.
+
+Implies:
+- Performance: needs thought
+- Concurrency: real concern
+- Data: consider query performance
+- Caching: beneficial
+- Architecture: may need separation of concerns
+
+AI behaviors:
+- Consider query performance
+- Suggest appropriate indexing
+- Recommend caching for repeated data
+- Consider connection pooling
+- Suggest async for I/O bound operations
+- Think about peak load
+
+### 4. Large Scale (10K-1M)
+**Context**: Popular app, enterprise, significant traffic.
+
+Implies:
+- Performance: critical consideration
+- Concurrency: must design for it
+- Data: optimize queries, consider read replicas
+- Caching: required
+- Architecture: service separation, load balancing
+
+AI behaviors:
+- Performance-conscious suggestions
+- Database optimization important
+- Recommend caching strategies
+- Consider rate limiting
+- Suggest monitoring and alerting
+- Think about failure modes
+- Consider async patterns
+
+### 5. Internet Scale (1M+)
+**Context**: Massive traffic, global users, extreme reliability.
+
+Implies:
+- Performance: primary concern
+- Concurrency: horizontal scaling required
+- Data: distributed, sharding, eventual consistency
+- Caching: multi-layer
+- Architecture: microservices, CDN, global distribution
+
+AI behaviors:
+- Performance-first thinking
+- Consider distributed system patterns
+- Eventual consistency tradeoffs
+- Edge caching, CDN considerations
+- Graceful degradation
+- Circuit breakers, bulkheads
+- Consider geographic distribution
+- Extensive monitoring/observability
+
+## Scale × Architecture Implications
+
+| Scale | Database | Caching | Architecture | Async |
+|-------|----------|---------|--------------|-------|
+| Single | SQLite/file | None | Monolith | UX only |
+| Small Group | Single Postgres/MySQL | Optional | Monolith | Long ops |
+| Organization | Optimized, indexed | Redis/memory | Monolith or simple services | I/O bound |
+| Large | Read replicas, optimized | Required, strategic | Services | Pervasive |
+| Internet | Distributed, sharded | Multi-layer, CDN | Microservices | Everything |
+
+## Scale × Lifecycle Interactions
+
+Scale matters more in later lifecycle stages:
+
+| | PoC | MVP | Production |
+|---|-----|-----|------------|
+| Single | Ignore | Ignore | Basic |
+| Small | Ignore | Basic | Consider |
+| Organization | Sketch | Consider | Design for |
+| Large | Note | Design for | Optimize |
+| Internet | Note concerns | Architecture focus | Primary concern |
+
+A proof-of-concept for an internet-scale system should note scaling concerns but not implement them. An MVP might sketch the architecture. Production must actually work at scale.
+
+## Practical Guidance
+
+### Don't Optimize Prematurely
+```
+// For single user / small group - this is fine:
+const users = await db.query('SELECT * FROM users');
+const activeUsers = users.filter(u => u.active);
+
+// Don't do this yet:
+const activeUsers = await db.query(
+  'SELECT * FROM users WHERE active = true'
+);
+// Unless you actually have performance problems
+```
+
+### But Don't Paint Yourself Into a Corner
+```
+// For small scale, this is fine:
+function getUser(id) { ... }
+
+// But design interfaces that could scale:
+// NOT this:
+function getAllUsersAndFilterByCondition(condition) {
+  return users.filter(condition); // Loads all users into memory
+}
+
+// Instead:
+function findUsers(query) { ... } // Could be backed by DB query later
+```
+
+The goal is simple code that doesn't preclude scaling—not scaled code you don't need.
