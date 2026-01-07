@@ -1,0 +1,201 @@
+---
+description: Language-agnostic testing methodology to incorporate into generated stack rules
+---
+
+# Testing Methodology
+
+When generating testing rules, incorporate these principles adapted to the specific test framework.
+
+## The 5 Questions
+
+Every test should answer these questions. Generate rules that enforce this structure:
+
+1. **What is the unit under test?**
+   - Clear identification in test name or describe block
+   - One unit per test suite
+
+2. **What is the expected behavior?**
+   - Expressed in given/should or arrange/act/assert format
+   - Natural language that non-developers could understand
+
+3. **What is the actual output?**
+   - The unit was exercised by the test
+   - Result is captured for comparison
+
+4. **What is the expected output?**
+   - Explicit expected value
+   - Not derived from the same code being tested
+
+5. **How can we find the bug?**
+   - Implicitly answered if above are clear
+   - Test name and structure point to the problem
+
+## RITE Way
+
+Generate rules that ensure tests are:
+
+### Readable
+- Test names describe behavior, not implementation
+- Given/should format: "given [context], should [behavior]"
+- Everything needed to understand the test is in the test
+- No hunting through setup files
+
+### Isolated
+- Tests don't depend on each other
+- No shared mutable state between tests
+- Each test sets up its own context
+- Order of test execution doesn't matter
+
+### Thorough
+- Cover expected cases
+- Cover likely edge cases
+- Cover error cases for critical paths
+- Scale coverage with lifecycle/risk
+
+### Explicit
+- No hidden setup
+- No magic values without explanation
+- Factory functions over shared fixtures
+- If a test needs data, it creates or requests it
+
+## Test Structure Pattern
+
+Generate framework-specific rules that follow this structure:
+
+```
+describe '[Unit Under Test]':
+  test '[scenario category]':
+    given: [context/preconditions]
+    should: [expected behavior]
+    actual: [exercise the unit]
+    expected: [explicit expected result]
+```
+
+Adapt syntax to the framework:
+- Jest/Vitest: `describe`/`it` or `test`
+- pytest: `class Test...` / `def test_...`
+- Go: `func TestX(t *testing.T)`
+- etc.
+
+## Test Isolation Rules
+
+Generate rules that prevent common isolation failures:
+
+### No Shared Mutable State
+```
+BAD:  const testUser = { name: 'Test' };  // shared between tests
+GOOD: const createTestUser = () => ({ name: 'Test' });  // factory
+```
+
+### No Test Order Dependencies
+- Each test starts from known state
+- Teardown/cleanup between tests
+- Don't rely on previous test's side effects
+
+### No External Dependencies (for unit tests)
+- Mock external services
+- Use test doubles for databases
+- Isolate from network, filesystem, time
+
+## Assertion Guidelines
+
+Generate rules for clear assertions:
+
+### One Logical Assertion Per Test
+- Multiple `assert` calls OK if testing one concept
+- Split into separate tests for separate behaviors
+
+### Assert on Behavior, Not Implementation
+```
+BAD:  assert array.length === 3  // implementation detail
+GOOD: assert result.includes(expectedItem)  // behavior
+```
+
+### Use Semantic Assertions
+- Follow predicate naming from @aigen/rules/guidance/programming-principles.mdc
+- Use framework-specific matchers when available
+
+## Test Organization
+
+### Colocation
+Generate rules that encourage tests near the code:
+```
+user.js
+user.test.js
+```
+
+Benefits:
+- Easy to find tests
+- Tests move with code
+- Clear what's tested
+
+### Naming Convention
+Adapt to framework:
+- `*.test.js` / `*.spec.js`
+- `*_test.go`
+- `test_*.py`
+
+## Testing State Management
+
+For applications with centralized state (Redux, Vuex, etc.):
+
+### Use Selectors for State Access
+```
+BAD:  assert state.users.list[0].name === 'Test'
+GOOD: assert selectFirstUserName(state) === 'Test'
+```
+
+### Set Up State via Actions
+```
+BAD:  const state = { users: [{ name: 'Test' }] }  // manual
+GOOD: const state = reduce(actions.addUser({ name: 'Test' }))
+```
+
+### Test Public API Only
+- Actions + Selectors = public API
+- Don't test reducer internals directly
+- Tests survive refactoring
+
+## Testing Side Effects
+
+For sagas, thunks, effects:
+
+### Yield/Return Effect Descriptions
+Test what effects are requested, not their execution:
+```
+// Test yields the right effect
+assert gen.next().value === call(fetchUser, id)
+
+// Don't test fetchUser itself here
+```
+
+### Drive Generators/Iterators
+Pass mock data back into generator to test branches:
+```
+gen.next()                    // trigger
+gen.next(mockData)            // simulate success
+gen.throw(new Error('fail'))  // simulate failure
+```
+
+## Lifecycle Calibration
+
+| Aspect | PoC | MVP | Production |
+|--------|-----|-----|------------|
+| Coverage | Skip unless needed | Critical paths | Comprehensive |
+| Isolation | Basic | Required | Strict |
+| Speed | Not critical | Should be fast | Must be fast |
+| Edge cases | Ignore | Likely ones | Thorough |
+| 5 Questions | Optional | Encouraged | Required |
+| RITE | Loose | Moderate | Strict |
+
+## Framework-Specific Adaptation
+
+When generating for specific frameworks, adapt:
+
+- **Assertion syntax**: `assert`, `expect`, `should`
+- **Describe/it structure**: Varies by framework
+- **Mock/stub patterns**: Framework-specific utilities
+- **Async handling**: Promises, callbacks, async/await
+- **Setup/teardown**: beforeEach, fixtures, etc.
+
+Always use the idiomatic patterns for the chosen framework.

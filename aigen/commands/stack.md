@@ -4,6 +4,9 @@ Generate technology-specific rules based on your stack, calibrated to your lifec
 
 ## References
 @aigen/rules/generator.mdc
+@aigen/rules/guidance/programming-principles.mdc
+@aigen/rules/guidance/testing-methodology.mdc
+@aigen/rules/guidance/security-patterns.mdc
 
 ## Prerequisites
 
@@ -189,6 +192,49 @@ When generating rules, consider these aspects based on what the user mentions:
 - Linting/formatting tools
 
 Only generate rules for technologies the user actually mentions or confirms.
+
+---
+
+## Incorporating Guidance
+
+When generating stack rules, incorporate principles from the guidance files, adapted to the specific technology:
+
+### Programming Principles (@aigen/rules/guidance/programming-principles.mdc)
+
+For each language/framework rule, include:
+- **Core principles** (DOT, YAGNI, KISS, DRY, SDA) adapted to language idioms
+- **Style preferences** (immutability, composition, declarative style) where language supports
+- **Naming conventions** adapted to language conventions (camelCase, snake_case, etc.)
+- **Comment guidelines** calibrated to team context
+
+**Calibration**: Scale strictness with lifecycle (PoC = relaxed, Production = strict)
+
+### Testing Methodology (@aigen/rules/guidance/testing-methodology.mdc)
+
+For each testing framework rule, include:
+- **5 Questions** structure adapted to framework syntax
+- **RITE Way** principles (Readable, Isolated, Thorough, Explicit)
+- **Assertion patterns** using framework-specific matchers
+- **Test organization** following framework conventions
+
+**Required sections in testing rules:**
+- Given/should or arrange/act/assert structure
+- Isolation requirements (no shared mutable state)
+- Factory pattern over fixtures
+- State management testing patterns (if applicable)
+
+### Security Patterns (@aigen/rules/guidance/security-patterns.mdc)
+
+For each security-relevant rule, include:
+- **Secret comparison** via hash-then-compare (language-specific implementation)
+- **Input validation** patterns for the framework
+- **Output encoding** using framework's built-in escaping
+- **OWASP awareness** calibrated to risk level
+
+**Risk level determines:**
+- Personal/Internal: Basic patterns, flag obvious issues
+- Business: Full patterns, require validation/encoding
+- Financial/Healthcare: Paranoid patterns, audit logging, compliance considerations
 
 ---
 
