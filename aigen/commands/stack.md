@@ -1,293 +1,235 @@
+---
+description: Generate technology-specific rules based on your stack
+---
+
 # /aigen-stack
 
-Generate technology-specific rules based on your stack, calibrated to your lifecycle context.
+Generate technology-specific rules calibrated to lifecycle context.
 
 ## References
+
 @aigen/rules/generator.mdc
+@aigen/rules/guidance/sudolang-style.mdc
 @aigen/rules/guidance/programming-principles.mdc
 @aigen/rules/guidance/testing-methodology.mdc
 @aigen/rules/guidance/security-patterns.mdc
 
 ## Prerequisites
 
-Run `/aigen-init` first to establish strategic context. Stack rules build on core behaviors and lifecycle.
+Run /aigen-init first to establish strategic context.
 
-## Approach
+## Process
 
-**For existing codebases:**
-1. Analyze codebase to detect current tech stack
-2. Present findings and let user verify/adjust
-3. Generate stack rules calibrated to technology + lifecycle
+stackProcess() {
+  detectCodebase |> (newRepo => flowA) | (existingRepo => flowB) |> generateStackRules
+}
 
-**For new/empty repos:**
-1. Ask highest-level question first (language/ecosystem preference)
-2. Recommend complete stack based on project type + lifecycle + ecosystem
-3. Let user accept, adjust, or specify exactly
-4. Generate stack rules with setup guidance
+detectCodebase() {
+  (no source code) => newRepo
+  (source code exists) => existingRepo
+}
 
-## Behavior
+## Flow A: New Repo
 
-### Step 1: Detect New vs Existing Codebase
+flowA() {
+  confirmProjectType |> askEcosystem |> recommendStack |> letUserAdjust
+}
 
-First, determine if this is a new or existing project.
+confirmProjectType() {
+  """
+  From your init setup:
+  - Building: ${projectType}
+  - Target lifecycle: ${targetLifecycle}
+  - Risk level: ${riskLevel}
 
----
+  Let's choose your tech stack.
+  """
+}
 
-## Flow A: New/Empty Repo
+askEcosystem() {
+  """
+  What language or ecosystem do you want to work in?
 
-If no source code is detected, guide the user through stack selection with high-level questions first.
+  1. JavaScript/TypeScript (Node, React, etc.)
+  2. Python
+  3. Go
+  4. Rust
+  5. Ruby
+  6. Java/Kotlin
+  7. C# / .NET
+  8. Other: [specify]
+  9. No preference - recommend based on my project type
+  """
+}
 
-### A1: Confirm Project Type (from init)
+recommendStack() {
+  Based on projectType + lifecycle + ecosystem, recommend complete stack
 
-Reference what was captured in `/aigen-init`:
-```
-From your init setup:
-- Building: [Web app / API / CLI / Library / etc.]
-- Target lifecycle: [PoC / MVP / Production-ready]
-- Risk level: [Personal / Business / etc.]
-
-Let's choose your tech stack.
-```
-
-### A2: Language/Ecosystem Preference
-
-Start with the highest-level question:
-```
-What language or ecosystem do you want to work in?
-
-1. JavaScript/TypeScript (Node, React, etc.)
-2. Python
-3. Go
-4. Rust
-5. Ruby
-6. Java/Kotlin
-7. C# / .NET
-8. Other: [specify]
-9. No preference - recommend based on my project type
-```
-
-### A3: Recommend Stack Based on Context
-
-Based on project type + lifecycle + ecosystem, recommend a complete stack.
-
-**Recommendation criteria:**
-
-| Factor | How it affects recommendation |
-|--------|------------------------------|
-| Lifecycle (PoC) | Minimize setup, batteries-included, simple storage |
-| Lifecycle (MVP) | Balance speed with foundation, easy deployment |
-| Lifecycle (Production) | Reliability, observability, team scalability |
-| Project type | Appropriate frameworks for web/API/CLI/library |
-| Ecosystem | Stay within user's preferred language |
-| Team familiarity | Weight toward what they already know |
-| Risk level | Higher risk → more established/proven choices |
-
-**Present recommendations with:**
-- What you're recommending and why
-- What the stack optimizes for given their context
-- Clear invitation to adjust or specify differently
-
-### A4: Let User Specify Exactly
-
-User can override recommendations at any point:
-- "I need to use X because that's what our team knows"
-- "We're adding to an existing Y system"
-- "I've already decided on Z"
-
-Adjust accordingly and ask follow-up questions if needed (e.g., version, existing patterns to match).
-
-### A5: Generate Stack Rules for New Project
-
-Generate stack rules that include:
-- Setup guidance (how to initialize the project)
-- Directory structure recommendations
-- Initial patterns to follow
-- Lifecycle-appropriate constraints
-
----
+  RecommendationCriteria {
+    PoC => minimize setup, batteries-included, simple storage
+    MVP => balance speed with foundation, easy deployment
+    Production => reliability, observability, team scalability
+    ProjectType => appropriate frameworks
+    Ecosystem => stay within preference
+    TeamFamiliarity => weight toward known tech
+    RiskLevel => higher risk → proven choices
+  }
+}
 
 ## Flow B: Existing Codebase
 
-### B1: Analyze Codebase
+flowB() {
+  analyzeStack |> presentFindings |> verifyWithUser
+}
 
-Examine the codebase to detect technologies by looking for:
-- Package manifests (package.json, requirements.txt, go.mod, Cargo.toml, Gemfile, etc.)
-- Framework config files
-- Language config files (tsconfig, etc.)
-- Test framework config
-- CI/CD config
-- Deployment config
-- Database/ORM config
-- Code patterns (imports, directory structure)
+analyzeStack() {
+  Examine for:
+    PackageManifests => package.json, requirements.txt, go.mod, Cargo.toml
+    FrameworkConfig => next.config, vite.config, etc.
+    LanguageConfig => tsconfig, pyproject.toml
+    TestFramework => vitest.config, pytest.ini
+    CICD => .github/workflows, gitlab-ci
+    Deployment => vercel.json, Dockerfile, terraform
+    Database => prisma/schema, alembic
+    CodePatterns => imports, directory structure
+}
 
-### B2: Present Findings and Verify
+presentFindings() {
+  """
+  Detected stack:
 
-Present detected stack organized by category:
-- Language/runtime
-- Framework(s)
-- Database/storage
-- Testing
-- Deployment
-- Other significant libraries
+  Language/Runtime: ${languages}
+  Framework(s): ${frameworks}
+  Database/Storage: ${database}
+  Testing: ${testFramework}
+  Deployment: ${deployment}
+  Other: ${otherLibraries}
 
-Ask user to confirm, add, remove, or correct.
+  Confirm, add, remove, or correct?
+  """
+}
 
-Accept corrections like:
-- "We're also using X for Y"
-- "Remove X, we actually use Y"
-- "We're migrating from X to Y"
+AcceptCorrections {
+  "We're also using X for Y"
+  "Remove X, we actually use Y"
+  "We're migrating from X to Y"
+}
 
-### B3: Generate Lifecycle-Aware Stack Rules
+## Lifecycle Calibration
 
-Generate rules calibrated to BOTH the tech stack AND the lifecycle context from core.mdc.
-
-Show what rules will reflect:
-- How each technology's rules are calibrated to lifecycle
-- What's stricter for new code vs existing code (if transitioning)
-- How risk level affects the rules
-
-Ask user to confirm or adjust before generating.
-
-## Lifecycle-Calibrated Stack Rules
-
-Stack rules should vary based on lifecycle. The same technology needs different rules at different stages:
-
-| Aspect | PoC | MVP | Early Prod | Mature | Legacy |
-|--------|-----|-----|------------|--------|--------|
-| Type safety | Loose, speed matters | Prefer types, shortcuts ok | Strict on new code | Strict everywhere | Preserve existing |
-| Patterns | Whatever works | Basic structure | Consistent patterns | Strict patterns | Preserve, modernize incrementally |
-| Testing | Skip unless needed | Critical paths | New code tested, add when modifying | Comprehensive | Add tests before any change |
-| Data/schema | Change freely | Basic migrations | Migration safety | Thorough review, rollback plans | Extreme caution |
-| Error handling | Minimal | User-facing paths | Comprehensive | Thorough + monitoring | Preserve behavior |
-| Dependencies | Whatever helps | Reasonable choices | Evaluate carefully | Proven, stable | Minimize changes |
-
----
+LifecycleCalibration {
+  | Aspect | PoC | MVP | EarlyProd | Mature | Legacy |
+  | TypeSafety | Loose | Prefer | Strict new | Strict all | Preserve |
+  | Patterns | Whatever | Basic | Consistent | Strict | Preserve |
+  | Testing | Skip | Critical | New tested | Comprehensive | Before change |
+  | DataSchema | Free | Basic | Safe | Reviewed | Extreme care |
+  | ErrorHandling | Minimal | UserPaths | Comprehensive | Monitored | Preserve |
+  | Dependencies | Whatever | Reasonable | Evaluate | Proven | Minimize |
+}
 
 ## Technology Categories
 
-When generating rules, consider these aspects based on what the user mentions:
+TechCategories {
+  Frontend => Framework, StateManagement, Styling, BuildTool
+  Backend => Runtime, Framework, APIStyle
+  Data => Database, ORM, Caching
+  Infrastructure => Deployment, CICD
+  Quality => Testing, Linting
+}
 
-### Frontend
-- Framework (React, Vue, Svelte, Angular, etc.)
-- State management (built-in, Redux, Zustand, etc.)
-- Styling (Tailwind, CSS Modules, styled-components, etc.)
-- Build tool (Vite, webpack, framework CLI)
-
-### Backend
-- Runtime/language (Node, Python, Go, Ruby, etc.)
-- Framework (Express, FastAPI, Rails, etc.)
-- API style (REST, GraphQL, tRPC)
-
-### Data
-- Database (PostgreSQL, MongoDB, SQLite, etc.)
-- ORM/query layer (Prisma, SQLAlchemy, raw SQL)
-- Caching if mentioned
-
-### Infrastructure
-- Deployment (Vercel, AWS, Railway, Docker, etc.)
-- CI/CD if mentioned
-
-### Quality
-- Testing framework (Vitest, Jest, pytest, etc.)
-- Linting/formatting tools
-
-Only generate rules for technologies the user actually mentions or confirms.
-
----
+(only generate rules for confirmed technologies)
 
 ## Incorporating Guidance
 
-When generating stack rules, incorporate principles from the guidance files, adapted to the specific technology:
+incorporateGuidance() {
+  For each technology rule, include from guidance files:
 
-### Programming Principles (@aigen/rules/guidance/programming-principles.mdc)
+  ProgrammingPrinciples {
+    DOT, YAGNI, KISS, DRY, SDA => adapted to language idioms
+    StylePreferences => where language supports
+    NamingConventions => adapted to language
+  }
 
-For each language/framework rule, include:
-- **Core principles** (DOT, YAGNI, KISS, DRY, SDA) adapted to language idioms
-- **Style preferences** (immutability, composition, declarative style) where language supports
-- **Naming conventions** adapted to language conventions (camelCase, snake_case, etc.)
-- **Comment guidelines** calibrated to team context
+  TestingMethodology {
+    FiveQuestions => adapted to framework syntax
+    RITEWay => Readable, Isolated, Thorough, Explicit
+    AssertionPatterns => framework-specific
+  }
 
-**Calibration**: Scale strictness with lifecycle (PoC = relaxed, Production = strict)
+  SecurityPatterns {
+    SecretComparison => language-specific hash pattern
+    InputValidation => framework patterns
+    OutputEncoding => framework escaping
+    OWASPAwareness => calibrated to risk
+  }
+}
 
-### Testing Methodology (@aigen/rules/guidance/testing-methodology.mdc)
-
-For each testing framework rule, include:
-- **5 Questions** structure adapted to framework syntax
-- **RITE Way** principles (Readable, Isolated, Thorough, Explicit)
-- **Assertion patterns** using framework-specific matchers
-- **Test organization** following framework conventions
-
-**Required sections in testing rules:**
-- Given/should or arrange/act/assert structure
-- Isolation requirements (no shared mutable state)
-- Factory pattern over fixtures
-- State management testing patterns (if applicable)
-
-### Security Patterns (@aigen/rules/guidance/security-patterns.mdc)
-
-For each security-relevant rule, include:
-- **Secret comparison** via hash-then-compare (language-specific implementation)
-- **Input validation** patterns for the framework
-- **Output encoding** using framework's built-in escaping
-- **OWASP awareness** calibrated to risk level
-
-**Risk level determines:**
-- Personal/Internal: Basic patterns, flag obvious issues
-- Business: Full patterns, require validation/encoding
-- Financial/Healthcare: Paranoid patterns, audit logging, compliance considerations
-
----
+RiskCalibration {
+  Personal | Internal => basic patterns, flag obvious
+  Business => full patterns, require validation
+  Financial | Healthcare => paranoid, audit, compliance
+}
 
 ## Output Generation
 
-For each confirmed technology, generate a rule file in [output]/rules/stack/[tech].mdc
+generateStackRules() {
+  For each confirmed technology:
+    generateRule(technology)
+}
 
-Each generated rule should:
-1. State the lifecycle context it's calibrated for
-2. Reference the technology's current conventions and best practices
-3. Include lifecycle-appropriate patterns and constraints
-4. Differentiate between existing code and new code (if transitioning)
+generateRule(tech) {
+  Write [output]/rules/stack/${tech}.mdc using SudoLang:
 
-Structure:
-```markdown
----
-description: [Technology] guidelines for [lifecycle context]
-globs: "[appropriate file patterns]"
----
+  """
+  ---
+  description: ${tech} guidelines for ${lifecycle}
+  globs: "${filePatterns}"
+  ---
 
-# [Technology]
+  # ${TechName}
 
-## Context
-Current: [lifecycle] | Target: [lifecycle]
-[Brief description of what this means for this technology]
+  ## Context
+  Current: ${current} | Target: ${target}
+  ${contextDescription}
 
-## Patterns
-[Lifecycle-appropriate patterns for this technology]
+  ## Patterns
+  ${lifecyclePatterns}
 
-## New Code
-[Rules for new code - calibrated to target lifecycle]
+  ## New Code
+  ${targetGradeRules}
 
-## Existing Code (if transitioning)
-[Rules for existing code - typically more lenient, boy scout rule]
+  ## Existing Code
+  ${lenientRules} (if transitioning)
 
-## Constraints
-[Hard rules calibrated to lifecycle + risk level]
-```
+  Constraints {
+    ${hardRules}
+  }
+  """
+}
 
 ## Completion
 
-Report:
-```
-Generated stack rules calibrated to your lifecycle:
+reportCompletion() {
+  """
+  Generated stack rules calibrated to your lifecycle:
 
-  Current: [lifecycle] | Target: [lifecycle]
-  Risk: [risk level]
+    Current: ${current} | Target: ${target}
+    Risk: ${riskLevel}
 
-  rules/stack/[technology].mdc  - [for each confirmed technology]
+    ${generatedRulesList}
 
-Stack rules reference your core.mdc context and will guide
-AI behavior appropriately for your project's stage.
+  Stack rules reference core.mdc and guide AI behavior
+  appropriately for your project's stage.
 
-To update stack rules after lifecycle transition:
-  Run /aigen-stack again after updating /aigen-init
-```
+  To update after lifecycle transition:
+    Run /aigen-stack again after updating /aigen-init
+  """
+}
+
+Constraints {
+  All generated files MUST use SudoLang patterns.
+  Only generate rules for confirmed technologies.
+  Calibrate strictness to lifecycle stage.
+  Include security patterns based on risk level.
+  Reference guidance files for consistent patterns.
+}

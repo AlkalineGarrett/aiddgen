@@ -1,252 +1,270 @@
+---
+description: Initialize a new AI command system through guided conversation
+---
+
 # /aigen-init
 
-Initialize a new AI command system through guided conversation.
-
-Also used to update an existing setup when transitioning between lifecycle stages.
+Initialize or update an AI command system calibrated to project context.
 
 ## References
+
 @aigen/rules/generator.mdc
+@aigen/rules/guidance/sudolang-style.mdc
 @aigen/rules/choices/lifecycle.mdc
 @aigen/rules/choices/risk-domain.mdc
 @aigen/rules/choices/team-context.mdc
 @aigen/rules/choices/change-velocity.mdc
 @aigen/rules/choices/scale.mdc
+@aigen/rules/guidance/product-management.mdc
+@aigen/rules/guidance/task-lifecycle.mdc
 
-## Approach
+## State
 
-1. Analyze the codebase to estimate current lifecycle stage
-2. Present findings and verify with user (analysis may be wrong)
-3. Ask about target lifecycle (may differ from current)
-4. Infer defaults for other dimensions based on target
-5. Let user accept or adjust
-6. Generate rules and commands calibrated to target, aware of current state
+InitState {
+  OutputDir         // Where to generate (default: ./ai)
+  CurrentLifecycle  // Analyzed from codebase
+  TargetLifecycle   // User's goal
+  Risk              // Consequence of failure
+  Team              // Who works on this
+  Velocity          // How often it changes
+  Scale             // Expected usage
+  IsTransition      // CurrentLifecycle != TargetLifecycle
+}
 
-## Behavior
+## Process
 
-1. Check for existing setup (offer to update or start fresh)
-2. Analyze codebase to estimate current lifecycle
-3. Verify current state with user
-4. Ask about target lifecycle
-5. Based on target, suggest values for risk, team, velocity, scale
-6. Generate core.mdc with synthesized behaviors
-7. Generate default commands (adapted to context)
-8. Report what was created
+initProcess() {
+  checkExisting |> analyzeCodebase |> verifyWithUser |> askTarget |> suggestDefaults |> generateOutput
+}
 
-## Step 1: Check Existing Setup
+## Step 1: Check Existing
 
-If output directory already exists:
-```
-Found existing AI command system in ./ai
+checkExisting() {
+  (output dir exists) => askUpdateOrFresh()
+}
 
-Would you like to:
-1. Update it (e.g., transitioning lifecycle stages)
-2. Start fresh (replace existing)
-```
+askUpdateOrFresh() {
+  """
+  Found existing AI command system in ${outputDir}
 
-## Step 2: Analyze Codebase (or detect new repo)
+  Would you like to:
+  1. Update it (e.g., transitioning lifecycle stages)
+  2. Start fresh (replace existing)
+  """
+}
 
-First, determine if this is a new or existing codebase:
+## Step 2: Analyze Codebase
 
-### If New/Empty Repo
+analyzeCodebase() {
+  (new/empty repo) => askProjectType |> askStartingLifecycle
+  (existing code) => detectLifecycle |> gatherEvidence
+}
 
-```
-This appears to be a new project (no source code detected).
+detectLifecycle() {
+  LifecycleSignals {
+    NoTests + MinimalStructure => PoC | Throwaway
+    SomeTests + BasicErrorHandling => TeamTool | MVP
+    GoodCoverage + CICD + Docs => EarlyProduction
+    ComprehensiveTests + Security + Monitoring => MatureProduction
+    OldPatterns + CautiousChanges => Legacy
+  }
 
-What are you building?
-1. Web application
-2. API / Backend service
-3. CLI tool
-4. Library / Package
-5. Mobile app
-6. Something else: [describe]
-```
+  Also examine:
+    README quality, error handling patterns, security practices
+    Documentation, git history, dependencies, CI/CD, logging
+}
 
-Then ask about target lifecycle directly (skip current state analysis):
-```
-What stage are you starting at?
-1. Proof of Concept - validate an idea quickly
-2. MVP - first version for real users
-3. Production-ready - building for reliability from the start
-```
+askProjectType() {
+  """
+  This appears to be a new project.
 
-For new repos, "current" and "target" lifecycle will be the same initially.
+  What are you building?
+  1. Web application
+  2. API / Backend service
+  3. CLI tool
+  4. Library / Package
+  5. Mobile app
+  6. Something else: [describe]
+  """
+}
 
-### If Existing Codebase
+## Step 3: Verify With User
 
-Examine the codebase to estimate current lifecycle stage. Look for signals:
+verifyWithUser() {
+  """
+  Based on my analysis:
 
-| Signal | Indicates |
-|--------|-----------|
-| No tests, minimal structure | PoC / Throwaway |
-| Some tests, basic error handling | Team Tool / MVP |
-| Good test coverage, CI/CD, docs | Early Production |
-| Comprehensive tests, security practices, monitoring | Mature Production |
-| Old patterns, cautious changes, legacy deps | Legacy |
+  Current state appears to be: ${estimatedLifecycle}
 
-Also look for:
-- README quality and completeness
-- Error handling patterns (try/catch, error boundaries, validation)
-- Security practices (input validation, auth patterns, no secrets in code)
-- Documentation (comments, API docs, architecture docs)
-- Git history (commit discipline, PR usage)
-- Dependencies (up to date? security scanning?)
-- CI/CD configuration
-- Logging/monitoring setup
+  Evidence:
+  - ${observation1}
+  - ${observation2}
+  - ${observation3}
 
-## Step 3: Present Analysis and Verify
+  Is this accurate? Or is the actual state different?
 
-```
-Based on my analysis of your codebase:
+  (Note: A codebase can have poor practices despite being in production,
+  or good practices despite being a prototype. Tell me the reality.)
+  """
+}
 
-Current state appears to be: [estimated lifecycle]
+AcceptCorrections {
+  "It's actually in production but we have tech debt"
+  "It's a prototype but I'm being careful because it handles payments"
+  "That's right"
+}
 
-Evidence:
-- [observation 1]
-- [observation 2]
-- [observation 3]
+## Step 4: Ask Target
 
-Is this accurate? Or is the actual state different?
+askTarget() {
+  """
+  What lifecycle stage are you targeting?
 
-(Note: A codebase can have poor practices despite being in production,
-or good practices despite being a prototype. Tell me the reality.)
-```
+  1. Stay at current (${current}) - optimize for where you are
+  2. Proof of Concept - validate fast, likely throwaway
+  3. Throwaway Tool - solve immediate problem
+  4. Team Tool - used by a small known group
+  5. MVP - first version for real users
+  6. Early Production - real users, growing
+  7. Mature Production - stable, reliable, many depend on it
+  8. Legacy - maintain but not actively developing
 
-Accept corrections like:
-- "It's actually in production but we have tech debt"
-- "It's a prototype but I'm being careful because it handles payments"
-- "That's right"
+  Or describe your goal (e.g., "transition from MVP to early production")
+  """
+}
 
-## Step 4: Ask About Target Lifecycle
+## Step 5: Suggest Defaults
 
-```
-What lifecycle stage are you targeting?
+suggestDefaults() {
+  Based on target lifecycle, infer reasonable defaults for:
+    risk, team, velocity, scale
 
-1. Stay at current ([current]) - optimize for where you are
-2. Proof of Concept - validate fast, likely throwaway
-3. Throwaway Tool - solve immediate problem
-4. Team Tool - used by a small known group
-5. MVP - first version for real users
-6. Early Production - real users, growing
-7. Mature Production - stable, reliable, many depend on it
-8. Legacy - maintain but not actively developing
+  """
+  Based on "${targetLifecycle}", I suggest:
 
-Or describe your goal (e.g., "transition from MVP to early production")
-```
+  - Risk: ${risk} - ${reasoning}
+  - Team: ${team} - ${reasoning}
+  - Velocity: ${velocity} - ${reasoning}
+  - Scale: ${scale} - ${reasoning}
 
-## Step 5: Suggest Remaining Dimensions
+  Accept these? Or tell me what's different about your situation.
+  """
+}
 
-Based on target lifecycle, suggest sensible defaults for the other dimensions.
+LifecycleDefaults {
+  PoC | Throwaway => simpler options
+  Production | Mature => more rigorous options
+}
 
-Use @aigen/rules/choices/ to understand what each option implies:
-- risk-domain.mdc - consequences of failure
-- team-context.mdc - who works on this
-- change-velocity.mdc - how often it changes
-- scale.mdc - expected usage
+## Custom Descriptions
 
-Present suggestions with brief reasoning:
-```
-Based on "[lifecycle]", I suggest:
+(user provides free-form text) => interpretCustomDescription()
 
-- Risk: [value] - [one-line why]
-- Team: [value] - [one-line why]
-- Velocity: [value] - [one-line why]
-- Scale: [value] - [one-line why]
+interpretCustomDescription() {
+  Look for:
+    Combinations that override defaults
+      "prototype but handles payments" => PoC + Financial risk
+    Transitions or future state
+      "might open source later" => note in rules
+    Context affecting multiple dimensions
+      "internal but company-wide" => Internal risk, Organization scale
 
-Accept these? Or tell me what's different about your situation.
-```
-
-Earlier lifecycle stages (PoC, Throwaway) default toward simpler options.
-Later stages (Production, Mature) default toward more rigorous options.
-
-## Handling Custom Descriptions
-
-If the user provides free-form text instead of selecting an option, interpret it. Look for:
-- Combinations that override defaults (e.g., "prototype but handles payments" → PoC + Financial risk)
-- Transitions or future state (e.g., "might open source later" → note in rules)
-- Context that affects multiple dimensions (e.g., "internal but company-wide" → Internal risk, Organization scale)
-
-Synthesize into coherent behavioral rules, not just the closest canonical option.
+  Synthesize into coherent rules, not closest canonical option
+}
 
 ## Output Generation
 
-After collecting choices, generate:
+generateOutput() {
+  generateCoreMdc |> generateCommands |> generateHelp |> reportCompletion
+}
 
-### [output]/rules/core.mdc
+### Core Rules
 
-Synthesize all choices into concrete AI behaviors:
+generateCoreMdc() {
+  Write [output]/rules/core.mdc using SudoLang with:
+    1. Project context (current, target, transition goals)
+    2. Concrete behaviors (error handling, testing, security, docs, complexity)
+    3. Constraints (must/must not)
+    4. If transitioning: differentiate existing code (lenient) vs new code (target-grade)
+}
 
-1. State project context: current state, target state, and any transition goals
-2. List concrete behaviors for error handling, testing, security, documentation, complexity, performance (use @aigen/rules/choices/*.mdc for what each lifecycle implies)
-3. Include constraints (must/must not)
-4. If transitioning, differentiate rules for existing code (lenient, boy scout rule) vs new code (target-grade)
+### Commands
 
-### [output]/commands/ - Default Commands
+AlwaysInclude {
+  /help => "List available commands"
+  /plan => "Review current plan, suggest next steps"
+  /task => "Break down and plan a task or feature"
+  /review => "Review code changes"
+  /commit => "Draft commit message"
+  /explain => "Explain code, architecture, or decisions"
+}
 
-Generate these commands, adapted to the project context:
+IncludeByContext {
+  TeamTool+ => /discover, /story, /execute, /log, /status
+  MVP+ => /feature, /journey, /architect
+  BusinessRisk+ => /security-review
+  NotPrototype => /refactor
+  Always => /debug
+  LargeTeam | OpenSource => /onboard
+  TeamReview => /pr
+  EarlyProduction+ => /changelog
+}
 
-#### Always included:
-- `/help` - List available commands
-- `/plan` - Review current plan, suggest next steps
-- `/task` - Break down and plan a task or feature
-- `/review` - Review code changes (depth adapted to lifecycle/risk)
-- `/commit` - Draft commit message for staged changes
-- `/explain` - Explain code, architecture, or decisions
+generateCommands() {
+  For each command to include:
+    1. Reference core.mdc
+    2. Use SudoLang patterns from @aigen/rules/guidance/sudolang-style.mdc
+    3. Adapt depth to lifecycle/risk
+    4. Include appropriate constraints
+}
 
-#### Included based on context:
-
-| Command | When to include |
-|---------|-----------------|
-| `/discover` | Team Tool or higher (product thinking matters) |
-| `/document` | Team context involves others (not solo throwaway) |
-| `/security-review` | Risk is Business or higher |
-| `/refactor` | Velocity is not Prototype (code will live) |
-| `/debug` | Always (everyone needs help debugging) |
-| `/architect` | MVP or higher (architecture decisions matter) |
-| `/estimate` | Team Tool or higher (planning with others) |
-| `/onboard` | Large Team or Open Source (newcomers exist) |
-| `/pr` | Team context involves code review |
-| `/changelog` | Early Production or higher (tracking releases) |
-
-Each generated command references core.mdc and adapts its behavior:
-- PoC `/review` is lighter than Mature Production `/review`
-- Solo `/commit` is simpler than Team `/commit`
-- High-risk `/security-review` is more thorough
-
-### [output]/commands/help.md
-
-Lists all generated commands with brief descriptions.
+CommandCalibration {
+  "PoC /review is lighter than Mature Production /review"
+  "Solo /commit is simpler than Team /commit"
+  "High-risk /security-review is more thorough"
+}
 
 ## Completion
 
-Report:
-```
-Created AI command system in [output]/
+reportCompletion() {
+  """
+  Created AI command system in ${outputDir}/
 
-Generated:
-  rules/core.mdc       - Core AI behaviors
-  commands/
-    help.md            - /help
-    plan.md            - /plan
-    task.md            - /task
-    review.md          - /review
-    commit.md          - /commit
-    explain.md         - /explain
-    [context-specific commands...]
+  Generated:
+    rules/core.mdc       - Core AI behaviors
+    commands/
+      help.md            - /help
+      plan.md            - /plan
+      task.md            - /task
+      ${additionalCommands}
 
-Your context:
-  Current lifecycle: [analyzed/verified value]
-  Target lifecycle:  [selected value]
-  Risk: [value]
-  Team: [value]
-  Velocity: [value]
-  Scale: [value]
+  Your context:
+    Current lifecycle: ${currentLifecycle}
+    Target lifecycle:  ${targetLifecycle}
+    Risk: ${risk}
+    Team: ${team}
+    Velocity: ${velocity}
+    Scale: ${scale}
 
-[If transitioning:]
-  Transition: [current] → [target]
-  AI will help you build [target]-grade practices incrementally.
+  ${transitionNote}
 
-Ready to use! Run /aigen-stack to add technology-specific rules.
+  Ready to use! Run /aigen-stack to add technology-specific rules.
 
-To update later (e.g., after reaching your target):
-  Run /aigen-init again to reassess and adjust.
-```
+  To update later: Run /aigen-init again to reassess.
+  """
+}
+
+transitionNote() {
+  (isTransition) => """
+  Transition: ${current} → ${target}
+  AI will help you build ${target}-grade practices incrementally.
+  """
+}
+
+Constraints {
+  All generated files MUST use SudoLang patterns.
+  Synthesize choices into coherent behavior, not independent settings.
+  Ask one key question, infer the rest.
+  Accept free-form descriptions, not just menu selections.
+  Calibrate command depth to lifecycle and risk.
+}

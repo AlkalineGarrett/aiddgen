@@ -1,5 +1,5 @@
 ---
-description: Language-agnostic programming principles to incorporate into generated stack rules
+description: Language-agnostic programming principles for generated stack rules
 ---
 
 # Programming Principles
@@ -8,121 +8,97 @@ When generating stack rules, incorporate these principles adapted to the specifi
 
 ## Core Principles
 
-### DOT - Do One Thing
-Each function/method should have a single responsibility. If you can't describe what it does without using "and", it's doing too much.
+PrincipleDefinitions {
+  DOT = "Do One Thing - single responsibility per function"
+  YAGNI = "You Aren't Gonna Need It - no premature abstraction"
+  KISS = "Keep It Simple - prefer straightforward over clever"
+  DRY = "Don't Repeat Yourself - extract after pattern stabilizes"
+  SDA = "Self Describing APIs - names communicate intent"
+}
 
-**Generate rules that:**
-- Encourage small, focused functions
-- Suggest splitting when functions grow
-- Separate concerns (IO from logic, mapping from side effects)
+### DOT - Do One Thing
+
+(function does multiple things) => suggest splitting
+(concern mixing: IO with logic, mapping with effects) => separate
+
+generateRules() {
+  Encourage small, focused functions
+  Suggest splitting when functions grow
+  Separate concerns
+}
 
 ### YAGNI - You Aren't Gonna Need It
-Don't build abstractions or features until they're actually needed.
 
-**Generate rules that:**
-- Discourage premature abstraction
-- Suggest simple solutions first
-- Push back on "what if" over-engineering
-- Scale strictness with lifecycle (PoC = maximum YAGNI)
+(premature abstraction detected) => push back
+(over-engineering "what if") => suggest simpler solution
 
-### KISS - Keep It Simple, Stupid
-Prefer straightforward solutions over clever ones.
+LifecycleCalibration {
+  PoC => maximum YAGNI
+  MVP => high YAGNI
+  Production => moderate YAGNI
+}
 
-**Generate rules that:**
-- Favor readable over clever code
-- Prefer standard patterns over novel approaches
-- Suggest the simplest implementation that works
-- Warn against unnecessary complexity
+### KISS - Keep It Simple
+
+(clever code) => suggest readable alternative
+(novel pattern) => prefer standard approach
 
 ### DRY - Don't Repeat Yourself
-Eliminate duplication, but only when the duplication is actually the same concept.
 
-**Generate rules that:**
-- Identify true duplication (same concept) vs incidental similarity
-- Suggest extraction only after pattern appears 2-3 times
-- Scale with velocity (rapid iteration = wait for patterns to stabilize)
-- Prefer duplication over wrong abstraction
+DRYThresholds {
+  PoC => wait for patterns
+  MVP => extract after 3x
+  Production => extract after 2x
+}
+
+(incidental similarity) => leave as is
+(true duplication: same concept) => extract
 
 ### SDA - Self Describing APIs
-Code should be readable without external documentation. Names, signatures, and structure should communicate intent.
 
-**Generate rules that:**
-- Encourage descriptive parameter names
-- Discourage generic names (data, payload, info, item)
-- Suggest explicit defaults in signatures
-- Prefer named parameters/options over positional arguments
+(generic names: data, payload, info) => suggest specific names
+(positional arguments) => prefer named parameters/options
+
+explicitDefaults() {
+  """
+  const createUser = ({ id = createId(), name = '' } = {}) => ({ id, name })
+  """
+}
 
 ## Style Principles
 
-### Immutability Preference
-Prefer creating new values over mutating existing ones.
+StylePreferences {
+  Immutability = "const/final/readonly by default, spread over mutation"
+  Composition = "combine simple pieces, avoid inheritance hierarchies"
+  Declarative = "map/filter/reduce over loops, describe what not how"
+}
 
-**Generate rules that:**
-- Suggest const/final/readonly by default
-- Prefer spread/copy over mutation
-- Identify mutation risks in shared state
-- Adapt to language idioms (some languages are more mutable)
-
-### Composition Over Inheritance
-Prefer combining simple pieces over building inheritance hierarchies.
-
-**Generate rules that:**
-- Discourage deep inheritance chains
-- Suggest function composition or delegation
-- Warn about inheritance for code reuse
-- Adapt to language (some have better composition support)
-
-### Declarative Over Imperative
-Describe what you want, not step-by-step how to get it.
-
-**Generate rules that:**
-- Prefer map/filter/reduce over manual loops
-- Suggest pattern matching where available
-- Encourage pipeline/chain style
-- Adapt to language capabilities
+(deep inheritance chain) => warn, suggest composition
+(manual loop) => suggest declarative alternative
 
 ## Naming Conventions
 
-These apply across languages with syntax adaptation:
-
-### Functions Are Verbs
-- `calculate`, `fetch`, `create`, `update`, `delete`
-- Not: `calculation`, `userData`, `handler`
-
-### Predicates Are Questions
-- `isEmpty`, `hasPermission`, `canEdit`, `isValid`
-- Return boolean, read as yes/no question
-
-### Strong Negatives Over Weak
-- Prefer `isEmpty(x)` over `!hasItems(x)`
-- Prefer `isInvalid` over `!isValid` for the negative case
-
-### Avoid Redundancy
-- `filter(users)` not `filterUsersList(users)`
-- Context provides meaning
-
-### Lifecycle Methods
-- Prefer `beforeX`/`afterX` over `willX`/`didX`
+NamingRules {
+  Functions => verbs: calculate, fetch, create, update
+  Predicates => questions: isEmpty, hasPermission, canEdit
+  Negatives => strong form: isEmpty over !hasItems
+  Redundancy => avoid: filter(users) not filterUsersList
+  Lifecycle => beforeX/afterX over willX/didX
+}
 
 ## Comment Guidelines
 
-### When to Comment
-- Explain "why", not "what"
-- Non-obvious business logic
-- Workarounds with context
-- Public API documentation (minimal)
+CommentRules {
+  When => "why" not "what", non-obvious logic, workarounds
+  Not => obvious code, restating code, every parameter
+}
 
-### When Not to Comment
-- Obvious code
-- Restating the code in English
-- Documenting every parameter
-- TODOs without context
-
-**Generate rules that:**
-- Discourage over-commenting
-- Require comments for non-obvious logic
-- Scale with team context (solo = less, open source = more)
-- Adapt docblock style to language conventions
+TeamCalibration {
+  Solo => minimal, future-self only
+  SmallTeam => why not what
+  LargeTeam => public APIs
+  OpenSource => comprehensive
+}
 
 ## Lifecycle Calibration
 
@@ -133,5 +109,5 @@ These apply across languages with syntax adaptation:
 | KISS | Maximum | High | High |
 | DRY | Wait | After 3x | After 2x |
 | SDA | Basic | Good | Strict |
-| Immutability | Optional | Preferred | Required for shared state |
-| Comments | Minimal | Why only | Why + public APIs |
+| Immutability | Optional | Preferred | Required for shared |
+| Comments | Minimal | Why only | Why + APIs |

@@ -1,41 +1,80 @@
+---
+description: List all AI command system generator commands
+---
+
 # /aigen-help
 
-List all available AI command system generator commands.
+Display available aigen commands and workflow.
 
 ## Purpose
 
-Generate a customized AI command system for your project. The generated commands and rules tell an AI assistant how to help with planning, reviewing, committing, and other software engineering tasks—calibrated to your project's context.
+Generate a customized AI command system for your project. Generated commands and rules tell an AI assistant how to help with planning, reviewing, committing, and other tasks—calibrated to your context.
 
 ## Commands
 
-- `/aigen-init` - Initialize: describe your project, get a complete command system
-- `/aigen-stack` - Add technology-specific rules (React, Python, etc.)
-- `/aigen-add-command` - Add a custom command beyond the defaults
-- `/aigen-add-rule` - Add a custom rule for specific AI behaviors
-- `/aigen-status` - Show current configuration
-- `/aigen-help` - Show this help
+AigenCommands {
+  /aigen-init => "Initialize: describe project, get complete command system"
+  /aigen-stack => "Add technology-specific rules (React, Python, etc.)"
+  /aigen-add-command => "Add a custom command beyond defaults"
+  /aigen-add-rule => "Add a custom rule for specific AI behaviors"
+  /aigen-status => "Show current configuration"
+  /aigen-help => "Show this help"
+}
 
 ## Workflow
 
-1. `/aigen-init` - AI analyzes your codebase to estimate current lifecycle stage, you verify and set target lifecycle, then it generates commands calibrated to your context.
+workflow() {
+  1. /aigen-init
+     AI analyzes codebase, estimates lifecycle
+     You verify and set target lifecycle
+     Generates commands calibrated to context
 
-2. `/aigen-stack` - (Optional) Describe your tech stack for technology-specific guidance.
+  2. /aigen-stack (optional)
+     Describe tech stack for technology-specific guidance
 
-3. Done! Your AI command system is ready to use.
+  3. Done!
+     AI command system ready to use
 
-4. Later: Re-run `/aigen-init` when transitioning lifecycle stages (e.g., MVP → Early Production) to update your AI command behaviors.
+  4. Later: re-run /aigen-init when transitioning lifecycle stages
+}
 
 ## What Gets Generated
 
-`/aigen-init` generates:
-- `rules/core.mdc` - AI behaviors calibrated to your lifecycle, risk, team, etc.
-- `commands/*.md` - AI commands (plan, task, review, commit, explain, debug, plus context-specific ones)
+GeneratedOutput {
+  /aigen-init => {
+    rules/core.mdc => "AI behaviors calibrated to lifecycle, risk, team"
+    commands/*.md => "plan, task, review, commit, explain, debug, plus context-specific"
+  }
+}
 
-Each command adapts to your context. A `/review` for a proof-of-concept is lighter than for mature production.
+CommandAdaptation {
+  Each command adapts to context
+  "PoC /review is lighter than Mature Production /review"
+}
 
 ## Approach
 
-Minimize required input:
-- Ask one key question, infer the rest
-- Show suggestions, let you accept or adjust
-- Accept free-form descriptions, not just menu selections
+ApproachPrinciples {
+  Ask one key question, infer the rest
+  Show suggestions, let user accept or adjust
+  Accept free-form descriptions, not just menus
+}
+
+showHelp() {
+  """
+  ## AI Command System Generator
+
+  ### Commands
+  - `/aigen-init` - Initialize command system
+  - `/aigen-stack` - Add technology rules
+  - `/aigen-add-command` - Add custom command
+  - `/aigen-add-rule` - Add custom rule
+  - `/aigen-status` - Show configuration
+  - `/aigen-help` - This help
+
+  ### Quick Start
+  1. Run `/aigen-init` to analyze and configure
+  2. Run `/aigen-stack` to add tech-specific rules
+  3. Use generated commands in your project
+  """
+}

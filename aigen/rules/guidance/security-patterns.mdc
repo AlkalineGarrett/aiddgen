@@ -1,199 +1,129 @@
 ---
-description: Language-agnostic security patterns to incorporate into generated stack rules
+description: Language-agnostic security patterns for generated stack rules
 ---
 
 # Security Patterns
 
-When generating security rules, incorporate these patterns adapted to the specific language/framework and risk level.
+When generating security rules, incorporate these patterns adapted to language/framework and risk level.
 
 ## Secret Comparison Strategy
 
-### The Problem with Timing Attacks
-String comparison typically short-circuits on first mismatch. Attackers can measure response time to guess secrets character-by-character ("hangman attack").
+TimingAttackProblem {
+  String comparison short-circuits on first mismatch.
+  Attackers measure response time to guess character-by-character.
+}
 
-### Common Wrong Solutions
+WrongSolutions {
+  timingSafeEqual => still leaks length
+  XOR accumulation => implementation bugs
+  Direct comparison => timing oracle
+}
 
-**Don't use these:**
-- `crypto.timingSafeEqual` or language equivalents on raw secrets
-- XOR accumulation tricks
-- Custom "constant time" comparison functions
-- Direct string equality on secrets
+RightSolution {
+  Hash both values, then compare hashes.
+  SHA3 removes prefix structure.
+  Any bit change randomizes hash.
+  Raw secrets never in logs/errors.
+}
 
-**Why they fail:**
-- Still leak information about length
-- Implementation bugs are common
-- Raw secrets may appear in logs/errors
+(secret comparison needed) => {
+  hashBothValues |> compareHashes
+  Add comment explaining why NOT to "fix" to timingSafeEqual
+}
 
-### The Right Solution: Hash Then Compare
+hashComparePattern() {
+  """
+  // Node.js
+  const hashSecret = s => crypto.createHash('sha3-256').update(s).digest('hex');
+  const verify = (stored, candidate) => hashSecret(stored) === hashSecret(candidate);
 
-**Always hash both values before comparison:**
+  // Python
+  def hash_secret(s): return hashlib.sha3_256(s.encode()).hexdigest()
+  def verify(stored, candidate): return hash_secret(stored) == hash_secret(candidate)
+  """
+}
 
-```
-// Pseudocode - adapt to language
-hash(storedSecret) === hash(candidateSecret)
-```
+## Input Validation
 
-**Why this works:**
-1. Hashing removes all prefix structure
-2. Any bit change fully randomizes the hash
-3. No timing oracle - comparison is just hash equality
-4. Raw secrets never appear in logs or errors
+ValidationRules {
+  Boundary => validate at system entry (forms, APIs, external data)
+  Whitelist => accept known-good, not reject known-bad
+}
 
-**Generate rules that:**
-- Require hashing (SHA-256, SHA-3) before secret comparison
-- Flag any raw secret comparison as CRITICAL
-- Include explanatory comment to prevent "fixes" back to timingSafeEqual
-- Specify the hash algorithm (prefer SHA-3, SHA-256 acceptable)
+(blacklist pattern: reject if contains X) => suggest whitelist
 
-### Language-Specific Implementation
+ValidationByType {
+  Strings => length limits, character whitelist, format regex
+  Numbers => range limits, type checks
+  URLs => protocol whitelist, domain validation
+  Files => magic bytes not extension, size limits
+}
 
-Generate framework-appropriate patterns:
+## Output Encoding
 
-```javascript
-// Node.js
-const crypto = require('crypto');
-const hashSecret = s => crypto.createHash('sha3-256').update(s).digest('hex');
-const verifySecret = (stored, candidate) => hashSecret(stored) === hashSecret(candidate);
-```
+EncodingByContext {
+  HTMLBody => entity encoding
+  HTMLAttributes => attribute encoding + quote
+  JavaScript => JS string encoding
+  SQL => parameterized queries
+}
 
-```python
-# Python
-import hashlib
-def hash_secret(s): return hashlib.sha3_256(s.encode()).hexdigest()
-def verify_secret(stored, candidate): return hash_secret(stored) == hash_secret(candidate)
-```
+(encoding bypass: dangerouslySetInnerHTML, |safe, raw) => require justification
 
-```go
-// Go
-import "golang.org/x/crypto/sha3"
-func hashSecret(s string) string { h := sha3.New256(); h.Write([]byte(s)); return hex.EncodeToString(h.Sum(nil)) }
-```
+## SQL Injection
 
-## Input Validation Patterns
+(SQL string concatenation) => CRITICAL, require parameterized
 
-### Validate at System Boundaries
-- User input from forms/APIs
-- Data from external services
-- File uploads
-- URL parameters
+parameterizedPattern() {
+  """
+  // BAD
+  query("SELECT * FROM users WHERE id = " + userId)
 
-### Validation Strategy by Type
-
-| Input Type | Validation Approach |
-|------------|---------------------|
-| Strings | Length limits, character whitelist, format regex |
-| Numbers | Range limits, type coercion checks |
-| Emails | Format validation + existence check if critical |
-| URLs | Protocol whitelist, domain validation |
-| Files | Type verification (magic bytes, not extension), size limits |
-| IDs | Format validation, existence check |
-
-### Whitelist Over Blacklist
-```
-BAD:  reject if contains('<script>')  // blacklist
-GOOD: accept only if matches /^[a-zA-Z0-9_-]+$/  // whitelist
-```
-
-## Output Encoding Patterns
-
-### Context-Specific Encoding
-
-| Output Context | Encoding Needed |
-|----------------|-----------------|
-| HTML body | HTML entity encoding |
-| HTML attributes | Attribute encoding + quote |
-| JavaScript | JS string encoding |
-| URLs | URL encoding |
-| CSS | CSS encoding |
-| SQL | Parameterized queries (not encoding) |
-
-### Generate Framework-Specific Rules
-Most frameworks have built-in encoding:
-- React: JSX auto-escapes
-- Django: Template auto-escapes
-- Rails: ERB auto-escapes
-
-Generate rules that:
-- Identify when auto-escaping is bypassed
-- Flag dangerous patterns (`dangerouslySetInnerHTML`, `|safe`, `raw`)
-- Require explicit justification for bypass
-
-## SQL Injection Prevention
-
-### Always Use Parameterized Queries
-
-```
-BAD:  query("SELECT * FROM users WHERE id = " + userId)
-GOOD: query("SELECT * FROM users WHERE id = ?", [userId])
-```
-
-Generate rules that:
-- Flag string concatenation in queries
-- Recommend ORM/query builder patterns
-- Identify dynamic table/column names (harder to parameterize)
+  // GOOD
+  query("SELECT * FROM users WHERE id = ?", [userId])
+  """
+}
 
 ## Authentication Patterns
 
-### Password Storage
-- Never store plaintext
-- Use adaptive hashing: bcrypt, argon2, scrypt
-- Not: MD5, SHA-1, SHA-256 alone (too fast)
+AuthRules {
+  Passwords => adaptive hashing (bcrypt, argon2), never plaintext
+  Sessions => cryptographically random, regenerate on privilege change
+  Cookies => HttpOnly, Secure, SameSite
+  RateLimiting => limit attempts, consider lockout
+}
 
-### Session Management
-- Cryptographically random session IDs
-- Regenerate on privilege change
-- Secure cookie flags (HttpOnly, Secure, SameSite)
+## OWASP Top 10
 
-### Rate Limiting
-- Limit login attempts
-- Limit password reset requests
-- Consider account lockout (with care for DoS)
-
-## OWASP Top 10 Checklist
-
-Generate rules that check for these (calibrated to risk level):
-
-1. **Broken Access Control** - Auth checks on all protected resources
-2. **Cryptographic Failures** - Proper encryption, no secrets in code
-3. **Injection** - Parameterized queries, input validation
-4. **Insecure Design** - Threat modeling for sensitive features
-5. **Security Misconfiguration** - Defaults changed, unnecessary features disabled
-6. **Vulnerable Components** - Dependencies up to date
-7. **Authentication Failures** - Strong auth, secure sessions
-8. **Data Integrity Failures** - Input validation, signed data
-9. **Logging Failures** - Security events logged, no sensitive data in logs
-10. **SSRF** - URL validation for user-provided URLs
+OWASPChecklist {
+  1. BrokenAccessControl => auth on all protected resources
+  2. CryptographicFailures => encryption, no secrets in code
+  3. Injection => parameterized queries, input validation
+  4. InsecureDesign => threat modeling
+  5. SecurityMisconfiguration => change defaults
+  6. VulnerableComponents => update dependencies
+  7. AuthenticationFailures => strong auth, secure sessions
+  8. DataIntegrityFailures => input validation, signed data
+  9. LoggingFailures => log security events, no sensitive data
+  10. SSRF => URL validation
+}
 
 ## Risk Level Calibration
 
 | Pattern | Personal | Internal | Business | Financial | Healthcare |
 |---------|----------|----------|----------|-----------|------------|
 | Secret hashing | Basic | Required | Required | Required | Required |
-| Input validation | Minimal | Prevent mistakes | Assume malice | Paranoid | Paranoid |
+| Input validation | Minimal | Mistakes | Malice | Paranoid | Paranoid |
 | Output encoding | Basic | Basic | Required | Required | Required |
-| SQL injection | Prevent | Prevent | Prevent | Prevent | Prevent |
-| OWASP checks | Skip | Partial | Full | Full + audit | Full + compliance |
-| Auth rigor | Minimal | Basic | Full | Full + MFA | Full + audit trail |
-| Logging | Debug | Errors | Security events | Full audit | Compliance-grade |
+| OWASP checks | Skip | Partial | Full | Full+audit | Compliance |
 
-## Detection Rules
+## Detection Severity
 
-Generate rules that detect and flag:
+SeverityLevels {
+  Critical => raw secret compare, SQL concat, secrets in code, missing auth
+  Warning => encoding bypass, dynamic queries, unvalidated URLs
+  Info => new auth logic, new data handling, external integrations
+}
 
-### Critical (Block/Fail)
-- Raw secret comparison
-- SQL string concatenation
-- Secrets in code/config committed
-- Missing auth on protected routes
-
-### Warning (Review Required)
-- Encoding bypass (`dangerouslySetInnerHTML`)
-- Dynamic query construction
-- External URL fetching without validation
-- Disabled security features
-
-### Info (Note for Review)
-- New authentication logic
-- New data handling
-- External service integration
-- File upload handling
+(critical pattern detected) => block/fail
+(warning pattern detected) => require review

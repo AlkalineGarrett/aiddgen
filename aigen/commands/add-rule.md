@@ -1,153 +1,160 @@
+---
+description: Generate a custom rule for specific AI behaviors
+---
+
 # /aigen-add-rule
 
-Generate a custom rule for specific AI behaviors.
+Generate a custom rule for AI behaviors not covered by defaults.
 
 ## References
+
 @aigen/rules/generator.mdc
+@aigen/rules/guidance/sudolang-style.mdc
 
-## Approach
+## Process
 
-Conversational gathering - ask about the rule, then build it together:
+addRule() {
+  askWhat |> askGuidance |> inferStructure |> draftRule |> refineIfNeeded |> generateRule
+}
 
-1. Ask what the rule should govern
-2. Ask for the key principles or constraints
-3. Infer structure and scope
-4. Show draft, let user refine
-5. Generate rule file
+## Step 1: Ask What
 
-## Behavior
+askWhat() {
+  """
+  What should this rule govern?
 
-### Step 1: Ask What
+  (e.g., "how we structure API endpoints", "error handling",
+   "naming conventions", "security for auth")
+  """
+}
 
-```
-What should this rule govern?
+## Step 2: Ask Core Guidance
 
-(e.g., "how we structure API endpoints", "error handling", "naming conventions", "security for auth")
-```
+askGuidance() {
+  """
+  What are the key principles or constraints?
 
-### Step 2: Ask Core Guidance
+  Tell me the main things the AI should always do, never do, or prefer.
+  """
+}
 
-```
-What are the key principles or constraints?
+AcceptFreeForm {
+  "Always use plural nouns for REST endpoints"
+  "Never expose internal IDs, use public slugs"
+  "Prefer composition over inheritance"
+  "Error messages should be user-friendly but log details internally"
+}
 
-Tell me the main things the AI should always do, never do, or prefer.
-```
+## Step 3: Infer Structure
 
-Accept free-form description. User might say:
-- "Always use plural nouns for REST endpoints"
-- "Never expose internal IDs, use public slugs"
-- "Prefer composition over inheritance"
-- "Error messages should be user-friendly but log details internally"
+inferStructure() {
+  From input, infer:
+    Category => patterns/ | security/ | stack/ | process/
+    Scope => always | specificFiles | whenReferenced
+    NeedsExamples => boolean
+}
 
-### Step 3: Infer and Draft
+RuleCategoryInference {
+  "API endpoint structure" => patterns/api-design.mdc
+  "how we handle errors" => patterns/error-handling.mdc
+  "auth security stuff" => security/auth.mdc
+  "React component patterns" => stack/react-patterns.mdc
+  "commit messages" => process/commits.mdc
+  "never use any type" => stack/typescript.mdc
+}
 
-Based on input, infer:
-- Category (patterns/, security/, stack/, process/)
-- Scope (always, specific file types, when referenced)
-- Whether examples would help
+## Step 4: Draft Rule
 
-```
-I'll create: rules/[category]/[name].mdc
+draftRule() {
+  """
+  I'll create: rules/${category}/${name}.mdc
 
-Applies to: [scope]
+  Applies to: ${scope}
 
-Principles:
-1. [derived]
-2. [derived]
+  Principles:
+  ${derivedPrinciples}
 
-Constraints:
-- Must: [derived]
-- Must not: [derived]
+  Constraints:
+  - Must: ${mustDo}
+  - Must not: ${mustNotDo}
 
-Want me to include code examples? Any adjustments?
-```
+  Want me to include code examples? Any adjustments?
+  """
+}
 
-### Step 4: Refine if Needed
+## Step 5: Refine
 
-User can:
-- Add more principles
-- Adjust constraints
-- Request examples
-- Change scope
+refineIfNeeded() {
+  User can:
+    Add more principles
+    Adjust constraints
+    Request examples
+    Change scope
+}
 
-### Step 5: Generate
+## Step 6: Generate
 
-Create rule file.
+generateRule() {
+  Write [output]/rules/${category}/${name}.mdc using SudoLang
+}
 
-## Interpreting Descriptions
+## Output Template
 
-| User says | Infer |
-|-----------|-------|
-| "API endpoint structure" | patterns/api-design.mdc, REST conventions |
-| "how we handle errors" | patterns/error-handling.mdc |
-| "auth security stuff" | security/auth.mdc, stricter scope |
-| "React component patterns" | stack/react-patterns.mdc, *.tsx files |
-| "commit messages" | process/commits.mdc |
-| "never use any type" | stack/typescript.mdc, add constraint |
+ruleTemplate() {
+  """
+  ---
+  description: ${derivedDescription}
+  alwaysApply: ${isAlways}
+  globs: "${pattern}" (if file-specific)
+  ---
 
-## Output Generation
+  # ${RuleName}
 
-Generate [output]/rules/[category]/[name].mdc:
+  ${contextParagraph}
 
-```markdown
----
-description: [Derived from purpose]
-alwaysApply: [true if "Always" scope]
-globs: "[pattern]" (if file-specific scope)
----
+  ## Principles
 
-# [Rule Name]
+  PrincipleRules {
+    ${principle1} => ${explanation1}
+    ${principle2} => ${explanation2}
+  }
 
-[Brief context paragraph if helpful]
+  ## Patterns
 
-## Principles
+  ${patternName}() {
+    \"\"\"
+    // Good example
+    ${goodCode}
+    \"\"\"
+  }
 
-1. **[Principle]**: [Explanation]
-2. **[Principle]**: [Explanation]
-...
+  antiPattern() {
+    \"\"\"
+    // Bad - don't do this
+    ${badCode}
+    \"\"\"
+  }
 
-## Patterns
+  Constraints {
+    Must: ${mustConstraints}
+    Must not: ${mustNotConstraints}
+  }
+  """
+}
 
-[If examples requested]
+## Common Rules
 
-### [Pattern Name]
-[When to use]
+CommonRuleSuggestions {
+  Patterns => API design, error handling, component structure, file org, naming
+  Security => auth requirements, input validation, secret handling
+  Process => commit format, review checklist, deployment procedures
+}
 
-```[language]
-// Good example
-```
+(user unsure) => suggest from CommonRuleSuggestions
 
-### Anti-pattern
-```[language]
-// Bad example - don't do this
-```
-
-## Constraints
-
-Must:
-- [constraint]
-
-Must not:
-- [constraint]
-```
-
-## Common Rules to Generate
-
-Suggest these if user is unsure:
-
-### Patterns
-- API design conventions
-- Error handling patterns
-- Component structure
-- File organization
-- Naming conventions
-
-### Security
-- Authentication requirements
-- Input validation rules
-- Secret handling
-
-### Process
-- Commit message format
-- Code review checklist
-- Deployment procedures
+Constraints {
+  Generated rule MUST use SudoLang patterns.
+  Infer category and scope from description.
+  Offer examples when patterns would clarify.
+  Keep rules focused on one concern.
+}

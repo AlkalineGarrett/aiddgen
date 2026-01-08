@@ -1,0 +1,279 @@
+---
+description: SudoLang style patterns for generated rule files
+---
+
+# SudoLang Style Guide
+
+Generated .mdc files should use SudoLang patterns for concise, AI-readable rules.
+
+## File Structure
+
+```sudo
+---
+description: [Brief description]
+alwaysApply: true|false
+globs: "[pattern]" (if file-specific)
+---
+
+# [Rule Name]
+
+[Preamble: Role description and expertise to tap into]
+
+## [Section]
+
+[Content using SudoLang patterns below]
+
+Constraints {
+  [Natural language rules]
+}
+
+Commands {
+  /cmd - description
+}
+```
+
+## Core Patterns
+
+### Preamble
+Start with role and expertise:
+```sudo
+Act as a top-tier [role] with [expertise]. Your job is to [purpose].
+```
+
+### Type Definitions
+Define enums and types concisely:
+```sudo
+TaskStatus = pending | inProgress | completed | blocked | cancelled
+Requirement = "Given $situation, should $behavior"
+UserStory = "As a $persona, I want $goal, so that $benefit"
+```
+
+### State Blocks
+Define stateful context:
+```sudo
+State {
+  CurrentTask     // The task being executed
+  Status          // Current state
+  Context         // Relevant information
+}
+```
+
+### Functions
+Define behavior with inferred or explicit bodies:
+```sudo
+// Inferred function (AI fills in)
+fn validateInput;
+
+// Function with steps
+planTask() {
+  1. Decompose into atomic tasks
+  2. Order by dependencies
+  3. Define success criteria
+  4. Await approval
+}
+
+// Function with pipe composition
+executeTask() {
+  gatherContext |> validate |> execute |> report |> awaitApproval
+}
+```
+
+### Constraints Blocks
+Natural language rules that must be followed:
+```sudo
+Constraints {
+  Do ONE THING at a time, get approval before moving on.
+  Never modify files unless explicitly required.
+  If blocked, ask rather than assume.
+}
+```
+
+### Commands Blocks
+Define available commands:
+```sudo
+Commands {
+  /help - List available commands
+  /task [name] - Create a new task
+  /execute - Execute the next pending task
+  /status - Show current state
+}
+```
+
+### Options Blocks
+Define configurable parameters:
+```sudo
+Options {
+  --depth | -d [1..10] - Response detail level
+  --format | -f [json|markdown] - Output format
+}
+```
+
+### Pattern Matching
+React to conditions:
+```sudo
+// Simple pattern
+(input is invalid) => reject with explanation
+
+// Pattern with action
+UnrecognizedCommand => check orchestrator for instructions
+
+// Multiple patterns
+match (status) {
+  pending => "Ready to start"
+  inProgress => "Currently executing"
+  completed => "Done"
+  blocked => "Waiting on dependency"
+}
+```
+
+### Pipe Operator
+Compose operations:
+```sudo
+// Simple pipe
+input |> validate |> transform |> output
+
+// With emoji steps (for thinking)
+🎯 restate |> 💡 ideate |> 🪞 reflect |> ⚖️ evaluate |> 💬 respond
+```
+
+### Template Strings
+Interpolate values:
+```sudo
+epicTemplate() {
+  """
+  # ${EpicName}
+
+  **Status**: ${status}
+  **Goal**: ${goal}
+
+  ## ${TaskName}
+  ${description}
+  """
+}
+```
+
+### References
+Link to other files:
+```sudo
+Use @path/to/file.mdc for [purpose].
+Read @project/README.md before responding.
+```
+
+## Lifecycle Calibration in SudoLang
+
+Express calibration as constraints or tables:
+
+```sudo
+Constraints {
+  // Lifecycle: Early Production
+  Apply DOT - small, focused functions
+  Apply YAGNI - no premature abstraction
+  Extract patterns after 2x repetition (DRY)
+  Require tests for critical paths
+}
+```
+
+Or as structured data:
+```sudo
+LifecycleRules {
+  DOT = required
+  YAGNI = moderate
+  DRY = "extract after 2x"
+  Testing = "critical paths"
+}
+```
+
+## Command File Pattern
+
+For generated command files:
+
+```sudo
+---
+description: [Command] for [context]
+---
+
+# /[command]
+
+[Brief purpose]
+
+## References
+@rules/core.mdc
+
+## Process
+
+cmdName() {
+  1. [Step one]
+  2. [Step two]
+  3. [Step three]
+}
+
+## Output
+
+outputTemplate() {
+  """
+  ## [Section]
+  ${content}
+  """
+}
+
+Constraints {
+  [Rules for this command]
+}
+```
+
+## Rule File Pattern
+
+For generated rule files:
+
+```sudo
+---
+description: [Technology] guidelines for [lifecycle]
+globs: "[patterns]"
+---
+
+# [Technology]
+
+Act as [role] with [expertise].
+
+## Context
+Current: [lifecycle] | Target: [lifecycle]
+
+## Principles
+
+PrincipleRules {
+  DOT = [level]
+  YAGNI = [level]
+  KISS = [level]
+}
+
+## Patterns
+
+pattern() {
+  [numbered steps or pipe composition]
+}
+
+## State (if applicable)
+
+State {
+  [relevant state]
+}
+
+Constraints {
+  Must: [requirements]
+  Must Not: [prohibitions]
+}
+
+Commands {
+  /cmd - description
+}
+```
+
+## Style Principles
+
+From SudoLang style guide:
+- Favor natural language
+- Lean into inference (let AI fill in details)
+- Minimum code for clear flow control
+- Concise, readable, declarative
+- Constraints over procedures
+- Composition over inheritance
