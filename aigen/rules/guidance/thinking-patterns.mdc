@@ -1,0 +1,41 @@
+---
+description: Reflective Thought Composition (RTC) thinking pattern
+alwaysApply: true
+---
+
+# Thinking Patterns
+
+## Reflective Thought Composition (RTC)
+
+think() {
+  show your work:
+  🎯 restate |> 💡 ideate |> 🪞 reflectCritically |> 🔭 expandOrthogonally |> ⚖️ scoreRankEvaluate |> 💬 respond
+}
+
+RTCSteps {
+  🎯 restate => clarify the problem/request in own words
+  💡 ideate => generate initial approaches
+  🪞 reflectCritically => examine weaknesses, assumptions
+  🔭 expandOrthogonally => consider alternatives, different angles
+  ⚖️ scoreRankEvaluate => compare options, pick best
+  💬 respond => deliver clear answer
+}
+
+Options {
+  --depth | -d [1..10]  // 1 = concise, 10 = comprehensive
+}
+
+## When to Use
+
+ThinkingTriggers {
+  ComplexTask => use RTC
+  AmbiguousRequest => use RTC
+  ArchitecturalDecision => use RTC
+  SimpleQuery => respond directly
+}
+
+Constraints {
+  Keep thinking concise and information-dense.
+  Scale detail with depth option.
+  Show work visibly when thinking.
+}

@@ -1,0 +1,150 @@
+---
+description: Architecture principles for generated stack rules - explicit, testable, separated
+---
+
+# Architecture Principles
+
+Guide stack rule generation toward explicit, testable, well-separated architectures.
+
+## Core Philosophy
+
+PhilosophyRules {
+  ExplicitOverMagic => prefer code you can read without knowing library internals
+  PureCore => business logic free of side effects
+  SeparatedConcerns => state, UI, effects in distinct modules
+  TestabilityFirst => architecture enables easy testing
+  StandardOverFramework => vanilla patterns over framework abstractions
+}
+
+## Explicit Over Magic
+
+(library hides complexity) => prefer explicit alternative when equally capable
+(framework "magic") => understand cost: debugging, onboarding, lock-in
+
+ExplicitGuidance {
+  PreferVanilla => standard language/platform features over library abstractions
+  VisibleFlow => data and control flow readable in code
+  MinimalAbstraction => each layer must justify its existence
+}
+
+LifecycleCalibration {
+  PoC => magic acceptable for speed
+  TeamTool => explicit preferred, magic acceptable if well-understood
+  MVP+ => explicit required for core, magic acceptable at edges
+  MatureProduction => explicit throughout, minimal dependencies
+}
+
+## Separation of Concerns
+
+SeparationLayers {
+  State => data and transitions, no UI, no IO
+  UI => presentation only, receives data and callbacks
+  Effects => IO, network, side effects isolated
+  Logic => pure functions, deterministic, testable
+}
+
+(concern mixing detected) => suggest separation
+(UI contains business logic) => extract to pure functions
+(state management contains IO) => isolate effects
+
+### Patterns by Domain
+
+StateSeparation {
+  Pattern => "state transitions via pure functions"
+  Test => "input state + action → output state"
+}
+
+EffectSeparation {
+  Pattern => "describe effects, don't execute inline"
+  Test => "verify effect descriptions without execution"
+}
+
+UISeparation {
+  Pattern => "container/presentation or equivalent"
+  Container => "wires data and actions, no markup"
+  Presentation => "pure render from props, no state management"
+}
+
+## Pure Core / Imperative Shell
+
+ArchitectureModel {
+  Core => pure functions, business logic, deterministic
+  Shell => IO, effects, framework integration
+  Boundary => thin adapter between core and shell
+}
+
+(business logic in shell) => move to core
+(IO in core) => move to shell
+
+Benefits {
+  Testability => core tested without mocks
+  Portability => core framework-agnostic
+  Reasoning => pure functions easier to understand
+}
+
+## Testability-First Architecture
+
+TestabilityRules {
+  PublicAPI => test through public interfaces, not internals
+  Deterministic => same input → same output
+  Isolation => no shared mutable state between tests
+  NoMocks => architecture that minimizes mocking needs
+}
+
+(requires extensive mocking) => suggests poor separation
+(test touches internals) => suggests leaky abstraction
+
+TestPatterns {
+  StateLogic => "set up via actions, assert via selectors"
+  PureFunctions => "input → output, no setup needed"
+  Effects => "verify descriptions, not execution"
+  Integration => "thin layer at boundaries only"
+}
+
+## Standard Over Framework
+
+FrameworkGuidance {
+  Evaluate => "what does this abstract? could I write it?"
+  Prefer => "libraries over frameworks, functions over classes"
+  Avoid => "deep lock-in, framework-specific patterns throughout"
+}
+
+(framework pattern) => ensure team understands underlying concept
+(multiple framework options) => prefer less magical, more explicit
+
+LifecycleCalibration {
+  PoC => use whatever ships fastest
+  TeamTool => prefer understandable over powerful
+  MVP => balance productivity with explicitness
+  Production => explicit, minimal dependencies, long-term maintainability
+}
+
+## Code Generation Philosophy
+
+When generating code or guiding AI to generate code:
+
+GenerationRules {
+  HighLevelSpec => generate explicit implementation
+  AbstractionDirection => specs more abstract than output
+  Transparency => generated code readable without generator knowledge
+}
+
+(generated code) => should be maintainable without regeneration
+(spec language) => higher level than target language
+
+## Lifecycle Calibration Matrix
+
+| Principle | PoC | TeamTool | MVP | Production |
+|-----------|-----|----------|-----|------------|
+| Explicit over magic | Low | Medium | High | Required |
+| Separation | Minimal | Moderate | Good | Strict |
+| Pure core | Optional | Encouraged | Required | Required |
+| Testability | Manual OK | Critical paths | Comprehensive | Thorough |
+| Standard over framework | Speed first | Understandable | Balanced | Minimal deps |
+
+Constraints {
+  Architecture should enable testing, not require heroics.
+  Prefer boring, explicit code over clever abstractions.
+  Each layer of indirection must justify its cost.
+  Generated code should be readable standalone.
+}

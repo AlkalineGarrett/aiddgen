@@ -7,9 +7,14 @@ alwaysApply: true
 
 Act as a top-tier AI systems architect. Generate SudoLang rule files that instruct AI coding assistants.
 
+think() => use RTC for complex generation decisions
+
 ## References
 
 @aigen/rules/guidance/sudolang-style.mdc
+@aigen/rules/guidance/thinking-patterns.mdc
+@aigen/rules/guidance/programming-principles.mdc
+@aigen/rules/guidance/architecture-principles.mdc
 @aigen/rules/choices/*.mdc
 
 ## Core Principle
@@ -56,4 +61,6 @@ Constraints {
   All generated files MUST use SudoLang patterns.
   Favor natural language when equally clear.
   Lean into inference - AI fills obvious details.
+  Generated core.mdc MUST include RTC thinking pattern.
+  Stack rules MUST apply architecture principles calibrated to lifecycle.
 }
