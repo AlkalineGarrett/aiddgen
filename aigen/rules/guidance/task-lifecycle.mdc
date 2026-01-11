@@ -18,6 +18,14 @@ Epic {
   tasks[]       // Each has description + Given/Should requirements
 }
 
+TaskContext {
+  CodeContext       // files, functions, components to examine/modify
+  StyleGuides       // patterns and conventions that apply
+  Dependencies      // libraries, APIs, integrations required
+  Constraints       // technical limits, performance, business rules
+  AgentNeeds        // specialized expertise required
+}
+
 FileLocations {
   epics => tasks/[epic-name].md
   archive => tasks/archive/YYYY-MM-DD-[epic-name].md
@@ -25,16 +33,69 @@ FileLocations {
   log => activity-log.md
 }
 
+## Context Gathering
+
+gatherContext() {
+  Infer TaskContext from request
+  (uncertainty) => ask clarifying questions
+  (complex multi-domain) => assess agent orchestration needs
+}
+
+assessComplexity() {
+  MultiDomain => UI + backend + testing
+  SpecializedKnowledge => state management, TDD, product
+  CrossFunctional => requires coordination
+}
+
 ## Task Planning
 
 planTask() {
-  gatherContext |> decompose |> sequence |> defineSuccess |> createEpic |> awaitApproval
+  gatherContext |> assessComplexity |> decompose |> sequence |> createEpic |> reviewEpic |> awaitApproval
 }
 
 PlanningRules {
-  Atomic tasks, ~50 lines each, independently testable
-  Order by dependencies, identify approval gates
-  Given/Should requirements per task
+  Atomic => ~50 lines each, independently testable
+  Sequenced => ordered by dependencies
+  Gated => approval checkpoints between phases
+  Specified => Given/Should requirements per task
+}
+
+## Epic Template
+
+epicTemplate() {
+  """
+  # ${EpicName} Epic
+
+  **Status**: 📋 PLANNED
+  **Goal**: ${briefGoal}
+
+  ## Overview
+
+  ${singleParagraphStartingWithWHY}
+
+  ---
+
+  ## ${TaskName}
+
+  ${briefTaskDescription}
+
+  **Requirements**:
+  - Given ${situation}, should ${behavior}
+
+  ---
+  """
+}
+
+EpicConstraints {
+  Overview starts with WHY (user benefit/problem)
+  No task numbering (names only)
+  Brief descriptions (1 sentence max)
+  Only novel/insightful requirements
+  No extra sections beyond template
+}
+
+reviewEpic() {
+  Verify: WHY first, no numbering, Given/Should format, no boilerplate
 }
 
 ## Task Execution
@@ -43,14 +104,22 @@ executeTask() {
   loadEpic |> identifyNext |> executeSingle |> validate |> report |> awaitApproval
 }
 
+ExecutionRules {
+  SingleTask => only one in_progress at a time
+  Validate => verify success criteria met
+  Report => summarize accomplishment
+  Await => explicit approval before next
+}
+
 (multiple tasks in_progress) => invalid, only one at a time
+(task reveals new info) => pause, re-plan
 
 ## Epic Completion
 
 completeEpic() {
-  Update status to COMPLETED with date
-  Move to archive with date prefix
-  Update plan.md
+  Update status to ✅ COMPLETED (${date})
+  Move to tasks/archive/YYYY-MM-DD-${epicName}.md
+  Remove from plan.md
 }
 
 ## Activity Logging
@@ -70,8 +139,9 @@ Commands {
   /task => create epic, decompose, await approval
   /execute => run next task, single-task only
   /plan => review plan.md, suggest next steps
-  /log => log completion to activity-log.md
   /status => show epic and task state
+  /list => list tasks in current epic
+  /log => log completion to activity-log.md
 }
 
 ## Lifecycle Calibration
@@ -90,4 +160,8 @@ Constraints {
   Requirements use Given/Should format.
   No task numbering (names only).
   Keep epic files minimal.
+  Tasks should be ~50 lines or less.
+  Tasks should be independent.
+  If blocked or uncertain, ask rather than assume.
+  Avoid breaking changes (open/closed principle).
 }
