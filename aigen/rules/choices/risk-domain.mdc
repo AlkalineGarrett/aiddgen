@@ -4,131 +4,42 @@ description: Risk domain choice and its cascading implications
 
 # Risk Domain
 
-The consequences of failure determine how careful the AI should be. An internal dashboard can tolerate bugs that would be unacceptable in payment processing.
+Consequences of failure determine how careful the AI should be. Internal dashboards tolerate bugs unacceptable in payment processing.
 
 ## Options
 
-### 1. Personal/Hobby
-**Consequences of failure**: Inconvenience to the author only.
+RiskLevels {
+  Personal => Inconvenience to author only
+  Internal => Affects colleagues, wastes time
+  Business => Affects customers, revenue, reputation
+  Financial => Money lost, regulatory issues, lawsuits
+  Healthcare => Patient harm, regulatory penalties
+  Security => Enables attacks, data breaches
+}
 
-Implies:
-- Security: basic hygiene only
-- Validation: trust inputs
-- Errors: can crash, author will fix
-- Data: loss is annoying, not catastrophic
-- Privacy: author's own data
+## AI Behavior Calibration
 
-AI behaviors:
-- Don't push security unless asked
-- Skip input validation for author-controlled inputs
-- Simple error handling
-- No need for audit logs
-- Relaxed about credentials in config (local)
+BehaviorsByRisk {
+  Personal => skip security push, trust inputs, simple errors, relaxed about local creds
+  Internal => basic auth, validate to prevent mistakes, clear errors, don't over-engineer
+  Business => enforce auth, validate external input, sanitize output, structured logging, flag privacy
+  Financial => insist on security, validate everything, audit logging, idempotency, flag secrets
+  Healthcare => strict access control, encryption, audit trail, fail-safe, flag PII/PHI
+  Security => assume hostile input, whitelist validation, constant-time secrets, minimal error info
+}
 
-### 2. Internal Tool
-**Consequences of failure**: Affects colleagues, wastes time, embarrassment.
-
-Implies:
-- Security: trust internal network, authenticate users
-- Validation: prevent accidents, not attacks
-- Errors: should be understandable
-- Data: should have backups but not critical
-- Privacy: internal data, reasonable care
-
-AI behaviors:
-- Basic authentication
-- Input validation to prevent mistakes
-- Clear error messages
-- Suggest logging for debugging
-- Don't over-engineer security
-
-### 3. Business Application
-**Consequences of failure**: Affects customers, revenue, reputation.
-
-Implies:
-- Security: proper auth, defend against common attacks
-- Validation: assume mistakes and some malice
-- Errors: user-friendly, no stack traces
-- Data: backups critical, audit trail
-- Privacy: customer data requires protection
-
-AI behaviors:
-- Enforce authentication/authorization patterns
-- Validate all external input
-- Sanitize outputs (XSS, etc.)
-- Suggest structured logging
-- Recommend error tracking
-- Flag privacy concerns with data handling
-
-### 4. Financial/Payments
-**Consequences of failure**: Money lost, regulatory issues, lawsuits.
-
-Implies:
-- Security: defense in depth, assume attackers
-- Validation: paranoid, validate everything
-- Errors: detailed logging, careful user messages
-- Data: immutable audit trail, reconciliation
-- Compliance: PCI, SOX, etc. considerations
-
-AI behaviors:
-- Insist on security best practices
-- Input validation on everything
-- Audit logging for all operations
-- Suggest idempotency for operations
-- Flag any credential/secret handling
-- Consider race conditions and edge cases
-- Recommend code review for sensitive areas
-
-### 5. Healthcare/Regulated
-**Consequences of failure**: Patient harm, regulatory penalties, legal liability.
-
-Implies:
-- Security: strict access control, encryption
-- Validation: medical-grade correctness
-- Errors: fail safe, not fail fast
-- Data: HIPAA/GDPR, retention rules
-- Audit: complete trail required
-- Compliance: regulation-first thinking
-
-AI behaviors:
-- Strict input validation
-- Encryption for data at rest and in transit
-- Comprehensive audit logging
-- Access control on all operations
-- Consider fail-safe defaults
-- Flag anything that could expose PII/PHI
-- Recommend compliance review
-
-### 6. Infrastructure/Security
-**Consequences of failure**: Enables attacks on other systems, data breaches.
-
-Implies:
-- Security: assume hostile input always
-- Validation: paranoid, whitelist over blacklist
-- Errors: no information leakage
-- Data: minimal retention, careful access
-- Operations: defense in depth
-
-AI behaviors:
-- Assume all input is malicious
-- Whitelist validation approaches
-- Constant-time comparisons for secrets
-- Minimal error information in responses
-- Log security events, not data
-- Consider timing attacks
-- Recommend threat modeling
-
-## Risk × Lifecycle Interactions
-
-Risk domain modifies lifecycle behaviors:
+## Risk × Lifecycle
 
 | | PoC | MVP | Production |
 |---|-----|-----|------------|
-| Personal | Skip everything | Basic checks | Standard |
-| Internal | Basic auth | Auth + validation | + Logging |
-| Business | Auth skeleton | Full auth + validation | + Audit |
-| Financial | Security basics even in PoC | Full security | Defense in depth |
-| Healthcare | Compliance skeleton | Compliance + audit | Full compliance |
-| Security | Security-first even in PoC | Full security | Paranoid |
+| Personal | Skip | Basic | Standard |
+| Internal | Basic auth | + validation | + logging |
+| Business | Auth skeleton | Full auth | + audit |
+| Financial | Security basics | Full security | Defense in depth |
+| Healthcare | Compliance skeleton | + audit | Full compliance |
+| Security | Security-first | Full security | Paranoid |
 
-Even a "proof of concept" for a financial application needs security fundamentals—but can skip other concerns.
+Constraints {
+  Even PoC for financial/healthcare needs security basics.
+  Risk level overrides lifecycle for security concerns.
+}

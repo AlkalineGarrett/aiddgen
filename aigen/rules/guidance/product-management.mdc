@@ -4,7 +4,7 @@ description: Product management patterns for discovery, user stories, and requir
 
 # Product Management
 
-When generating product-related commands (/discover, /feature, /story), incorporate these patterns.
+When generating product-related commands, incorporate these patterns.
 
 ## Core Types
 
@@ -12,10 +12,24 @@ UserStory = "As a $persona, I want $goal, so that $benefit"
 Requirement = "Given $situation, should $behavior"
 
 PainPoint {
-  description   // What hurts
-  impact        // 1-10: How much it hurts
-  frequency     // 1-10: How often it happens
+  description
+  impact        // 1-10
+  frequency     // 1-10
   priority      // impact × frequency
+}
+
+UserJourney {
+  personas
+  steps[]       // each step has user stories and requirements
+}
+
+FeaturePRD {
+  problem       // why
+  solution      // what
+  journey       // step-by-step prose
+  requirements  // user stories with Given/Should requirements
+  outOfScope
+  openQuestions
 }
 
 ## Discovery Process
@@ -25,102 +39,15 @@ discoverProcess() {
 }
 
 understandProblem() {
-  1. What pain point are we addressing?
-  2. Who experiences this? (persona)
-  3. How severe? How frequent?
-  4. What do they do today?
+  What pain point? Who experiences it? How severe/frequent? Current alternatives?
 }
 
 exploreSolutions() {
-  1. What approaches could work?
-  2. What are the tradeoffs?
-  3. What's simplest? (apply YAGNI)
+  What approaches? Tradeoffs? Simplest option? (apply YAGNI)
 }
 
 defineRequirements() {
-  1. User stories with clear personas
-  2. Requirements in Given/Should format
-  3. Testable acceptance criteria
-}
-
-## Output Templates
-
-discoveryOutput() {
-  """
-  ## Problem Statement
-  ${painPoint.description}
-
-  ## Persona
-  ${persona.name}: ${persona.description}
-
-  ## Pain Point
-  - Impact: ${impact}/10
-  - Frequency: ${frequency}/10
-  - Priority: ${priority}
-
-  ## User Story
-  As a ${persona}, I want ${goal}, so that ${benefit}.
-
-  ## Requirements
-  - Given ${context1}, should ${behavior1}
-  - Given ${context2}, should ${behavior2}
-
-  ## Acceptance Criteria
-  - [ ] ${criterion1}
-  - [ ] ${criterion2}
-
-  ## Open Questions
-  - ${question1}
-  """
-}
-
-journeyOutput() {
-  """
-  ## User Journey: ${journeyName}
-
-  ### Personas
-  - ${persona1}: ${description1}
-
-  ### Steps
-
-  #### Step 1: ${stepName}
-  ${stepDescription}
-
-  **User Stories:**
-  - As a ${persona}, I want ${goal}, so that ${benefit}
-
-  **Requirements:**
-  - Given ${context}, should ${behavior}
-  """
-}
-
-featurePRD() {
-  """
-  # Feature: ${featureName}
-
-  ## Problem
-  ${whyBuilding}
-
-  ## Solution
-  ${whatBuilding}
-
-  ## User Journey
-  ${journeyProse}
-
-  ## Requirements
-
-  ### ${userStory1}
-  As a ${persona}, I want ${goal}, so that ${benefit}.
-
-  **Functional Requirements:**
-  - Given ${context}, should ${behavior}
-
-  ## Out of Scope
-  ${exclusions}
-
-  ## Open Questions
-  ${decisions}
-  """
+  User stories with personas, Given/Should requirements, testable criteria
 }
 
 ## Commands to Generate
@@ -130,28 +57,18 @@ CommandsByLifecycle {
   MVP+ => /feature, /journey
 }
 
-CommandDefinitions {
-  /discover => "Interactive exploration of user needs"
-  /story => "Create single user story with requirements"
-  /feature => "Plan complete feature with PRD"
-  /journey => "Map multi-step user journey"
-}
-
 ## Lifecycle Calibration
 
 | Aspect | PoC | MVP | Production |
 |--------|-----|-----|------------|
-| Discovery depth | Minimal | Core personas | Comprehensive |
-| Story format | Informal | Structured | Full format |
+| Discovery | Minimal | Core personas | Comprehensive |
+| Story format | Informal | Structured | Full |
 | Requirements | Implicit | Key behaviors | Thorough |
-| Journey mapping | Skip | Critical paths | Full journeys |
-| PRD detail | None | Brief | Comprehensive |
+| Journey mapping | Skip | Critical paths | Full |
 
 Constraints {
   Focus on user value, not implementation.
-  Keep requirements testable (Given/Should format).
+  Requirements must be testable (Given/Should).
   Identify assumptions to validate.
   Scale formality with lifecycle.
-  Ask clarifying questions when needed.
-  Output structured, parseable formats.
 }

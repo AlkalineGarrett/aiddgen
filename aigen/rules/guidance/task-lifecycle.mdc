@@ -4,62 +4,25 @@ description: Epic and task lifecycle management patterns
 
 # Task Lifecycle
 
-When generating task management commands (/task, /execute, /plan), incorporate these patterns.
+When generating task management commands, incorporate these patterns.
 
-## Task States
+## Core Types
 
 TaskStatus = pending | in_progress | completed | blocked | cancelled
-
-StateTransitions {
-  pending => in_progress
-  in_progress => completed | blocked | cancelled
-}
-
-(multiple tasks in_progress) => invalid, only one at a time
-
-## Epic Structure
 
 Epic {
   name
   status        // 📋 PLANNED | 🚧 IN PROGRESS | ✅ COMPLETED
   goal          // One sentence
-  overview      // WHY - user benefit
-  tasks[]       // Ordered task list
+  overview      // Starts with WHY
+  tasks[]       // Each has description + Given/Should requirements
 }
 
-epicLocation = "$projectRoot/tasks/[epic-name].md"
-
-epicTemplate() {
-  """
-  # ${epicName}
-
-  **Status**: ${status}
-  **Goal**: ${goal}
-
-  ## Overview
-
-  ${overview - starts with WHY}
-
-  ---
-
-  ## ${taskName}
-
-  ${briefDescription}
-
-  **Requirements**:
-  - Given ${situation}, should ${behavior}
-
-  ---
-  """
-}
-
-EpicConstraints {
-  Overview starts with WHY (user benefit)
-  No task numbering (names only)
-  Brief descriptions (1 sentence max)
-  Requirements use Given/Should format only
-  Only novel, meaningful requirements
-  No extra sections or boilerplate
+FileLocations {
+  epics => tasks/[epic-name].md
+  archive => tasks/archive/YYYY-MM-DD-[epic-name].md
+  plan => plan.md
+  log => activity-log.md
 }
 
 ## Task Planning
@@ -68,42 +31,10 @@ planTask() {
   gatherContext |> decompose |> sequence |> defineSuccess |> createEpic |> awaitApproval
 }
 
-gatherContext() {
-  1. What is being built?
-  2. What are the constraints?
-  3. What exists already?
-}
-
-decompose() {
-  1. Break into atomic, sequential tasks
-  2. Each task ~50 lines or less
-  3. Each task independently testable
-}
-
-sequence() {
-  1. Order by dependencies
-  2. Identify approval gates between phases
-}
-
-defineSuccess() {
-  1. Given/Should requirements per task
-  2. Clear completion criteria
-}
-
-taskPlanOutput() {
-  """
-  Created epic: tasks/${epicName}.md
-
-  ## ${epicName}
-
-  **Goal**: ${goal}
-
-  ### Tasks:
-  1. ${task1} - ${description1}
-  2. ${task2} - ${description2}
-
-  Approve to begin execution?
-  """
+PlanningRules {
+  Atomic tasks, ~50 lines each, independently testable
+  Order by dependencies, identify approval gates
+  Given/Should requirements per task
 }
 
 ## Task Execution
@@ -112,106 +43,51 @@ executeTask() {
   loadEpic |> identifyNext |> executeSingle |> validate |> report |> awaitApproval
 }
 
-ExecutionSteps {
-  1. Load => Read tasks/[epic-name].md
-  2. Identify => Find first pending task
-  3. Execute => Mark in_progress, complete only that task
-  4. Validate => Verify success criteria, run tests
-  5. Report => Summarize, show next task
-  6. Await => Get explicit approval
-}
-
-ExecutionConstraints {
-  Never attempt multiple tasks simultaneously.
-  Always get approval before proceeding.
-  If task reveals new info, pause and re-plan.
-  Tasks should be independent.
-}
-
-## Plan Integration
-
-planMdStructure() {
-  """
-  # Project Plan
-
-  ## Active Epics
-
-  - [${epicName}](tasks/${epicFile}.md) - ${status} - ${goal}
-
-  ## Completed
-
-  - [${epicName}](tasks/archive/YYYY-MM-DD-${epicFile}.md) - ${completionDate}
-  """
-}
-
-reviewPlan() {
-  1. Read plan.md
-  2. Check status of active epics
-  3. Identify priorities and blockers
-  4. Suggest next steps
-}
+(multiple tasks in_progress) => invalid, only one at a time
 
 ## Epic Completion
 
 completeEpic() {
-  1. Update status => "✅ COMPLETED (YYYY-MM-DD)"
-  2. Move file => tasks/archive/YYYY-MM-DD-[epic-name].md
-  3. Update plan.md => Remove from active, add to completed
+  Update status to COMPLETED with date
+  Move to archive with date prefix
+  Update plan.md
 }
 
 ## Activity Logging
 
-LogEntry = "$emoji ${epicName} - ${description}"
-
 LogCategories {
-  🚀 => New feature
-  🐛 => Bug fix
-  🔄 => Refactor
-  📝 => Documentation
-  🎨 => Design/UI
-  🔒 => Security
+  🚀 feature | 🐛 fix | 🔄 refactor | 📝 docs | 🎨 ui | 🔒 security
 }
 
 WhatToLog {
   Log => epic completions, major features, architecture decisions
-  Skip => config changes, file organization, minor fixes, dependencies, meta-work
-}
-
-logOutput() {
-  """
-  ## YYYY-MM-DD
-
-  - ${emoji} ${epicName} - ${description}
-  """
+  Skip => config, file org, minor fixes, dependencies
 }
 
 ## Commands to Generate
 
-CommandDefinitions {
-  /task => "Create and plan an epic"
-  /execute => "Execute next task in epic"
-  /plan => "Review plan, suggest next steps"
-  /log => "Log completed epic to activity log"
-  /status => "Show current epic and task status"
+Commands {
+  /task => create epic, decompose, await approval
+  /execute => run next task, single-task only
+  /plan => review plan.md, suggest next steps
+  /log => log completion to activity-log.md
+  /status => show epic and task state
 }
 
 ## Lifecycle Calibration
 
 | Aspect | PoC | MVP | Production |
 |--------|-----|-----|------------|
-| Epic formality | Informal | Structured | Full template |
-| Task granularity | Coarse | ~50 lines | ~50 lines |
+| Epic formality | Informal | Structured | Full |
+| Task size | Coarse | ~50 lines | ~50 lines |
 | Approval gates | Optional | Per task | Per task |
-| Plan tracking | Optional | plan.md | plan.md + archive |
-| Activity logging | Skip | Major items | All epics |
+| Plan tracking | Optional | plan.md | + archive |
 
 Constraints {
-  Enforce single-task execution (no parallelism).
-  Require explicit approval between tasks.
-  Maintain epic files in tasks/ directory.
-  Integrate with plan.md.
-  Archive completed epics with dates.
-  Log only significant completions.
-  Use Given/Should requirements format.
+  Single-task execution only.
+  Explicit approval between tasks.
+  Epic overview starts with WHY.
+  Requirements use Given/Should format.
+  No task numbering (names only).
   Keep epic files minimal.
 }

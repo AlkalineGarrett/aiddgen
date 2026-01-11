@@ -4,137 +4,40 @@ description: Change velocity choice and its cascading implications
 
 # Change Velocity
 
-How frequently the code changes affects the tradeoff between stability and adaptability. Stable systems benefit from optimization; rapidly changing systems benefit from simplicity.
+How frequently code changes affects stability vs adaptability. Stable systems benefit from optimization; rapidly changing systems benefit from simplicity.
 
 ## Options
 
-### 1. Stable/Maintenance
-**Context**: Rarely changes, mostly bug fixes.
+VelocityLevels {
+  Stable => Rarely changes, mostly bug fixes
+  SlowEvolution => Planned changes, quarterly features
+  ActiveDevelopment => Regular features, weekly/biweekly releases
+  RapidIteration => Daily changes, experimenting, pivoting
+  Prototype => Trying things, direction unclear
+}
 
-Implies:
-- Changes: small, surgical, well-tested
-- Abstractions: optimize for understanding, not modification
-- Refactoring: only if necessary for the fix
-- Risk: minimize blast radius
-- Testing: add tests before touching
+## AI Behavior Calibration
 
-AI behaviors:
-- Suggest minimal changes
-- Preserve existing patterns
-- Recommend adding tests before modifying
-- Warn about side effects
-- Avoid "while we're here" improvements
-- Focus on understanding existing code first
-- Suggest rollback strategies
+BehaviorsByVelocity {
+  Stable => minimal changes, preserve patterns, test before modify, warn side effects
+  SlowEvolution => clean implementations, appropriate abstraction, refactor with features
+  ActiveDevelopment => maintainable solutions, reasonable abstractions, fast tests
+  RapidIteration => simple direct solutions, avoid abstraction, wait for patterns, easy-to-delete
+  Prototype => maximum simplicity, inline everything, skip refactors, fastest path to results
+}
 
-### 2. Slow Evolution
-**Context**: Planned changes, quarterly features.
-
-Implies:
-- Changes: planned, considered
-- Abstractions: appropriate, not premature
-- Refactoring: as part of planned work
-- Architecture: reasonably stable
-- Testing: solid coverage
-
-AI behaviors:
-- Suggest clean implementations
-- Appropriate abstraction levels
-- Recommend refactoring when it helps the current task
-- Consider future needs but don't over-build
-- Maintain test coverage
-
-### 3. Active Development
-**Context**: Regular features, weekly/biweekly releases.
-
-Implies:
-- Changes: frequent, varied
-- Abstractions: balance reuse vs. simplicity
-- Refactoring: ongoing, incremental
-- Architecture: evolving
-- Testing: must be fast to not slow development
-
-AI behaviors:
-- Suggest maintainable solutions
-- Reasonable abstractions for repeated patterns
-- Recommend incremental refactoring
-- Keep tests fast
-- Consider deployment frequency
-- Balance speed and quality
-
-### 4. Rapid Iteration
-**Context**: Daily changes, experimenting, pivoting.
-
-Implies:
-- Changes: constant, unpredictable
-- Abstractions: avoid (things will change)
-- Refactoring: wait until patterns emerge
-- Architecture: flexible, not rigid
-- Testing: critical paths only, fast feedback
-
-AI behaviors:
-- Prefer simple, direct solutions
-- Avoid premature abstraction
-- Don't suggest DRY until pattern is stable
-- Recommend easy-to-delete code
-- Keep tests focused on behavior, not implementation
-- Suggest feature flags for experiments
-- Warn against over-engineering
-
-### 5. Prototype/Exploration
-**Context**: Trying things, direction unclear.
-
-Implies:
-- Changes: everything might change
-- Abstractions: none (code is disposable)
-- Refactoring: not worth it
-- Architecture: whatever works now
-- Testing: manual exploration
-
-AI behaviors:
-- Maximum simplicity
-- Inline everything
-- Skip suggesting refactors
-- Don't worry about duplication
-- Suggest the fastest path to seeing results
-- Code is meant to be thrown away or rewritten
-
-## Change Velocity × Code Quality Tradeoffs
+## Velocity × Code Quality
 
 | Velocity | Abstraction | DRY | Testing | Refactoring |
 |----------|-------------|-----|---------|-------------|
-| Stable | Preserve existing | Preserve | Add before change | Minimal |
-| Slow | Appropriate | Yes | Maintain coverage | With features |
+| Stable | Preserve | Preserve | Add before change | Minimal |
+| Slow | Appropriate | Yes | Maintain | With features |
 | Active | Moderate | Yes | Fast tests | Incremental |
 | Rapid | Minimal | Wait | Critical paths | When patterns emerge |
 | Prototype | None | No | Skip | Never |
 
-## Practical Examples
-
-### Rapid Iteration: Avoid This
-```
-// Over-engineered for rapidly changing code
-class UserNotificationService extends BaseNotificationService {
-  constructor(
-    private emailProvider: EmailProvider,
-    private smsProvider: SmsProvider,
-    private pushProvider: PushProvider,
-    private userPreferenceRepository: UserPreferenceRepository
-  ) { super(); }
-
-  async notify(userId: string, message: NotificationMessage): Promise<void> {
-    // Complex routing logic
-  }
+Constraints {
+  Rapid/Prototype: prefer simple, deletable code over "proper" abstractions.
+  Stable: understand existing code before changing.
+  Active: balance speed and quality.
 }
-```
-
-### Rapid Iteration: Prefer This
-```
-// Simple, easy to change or delete
-async function notifyUser(userId: string, message: string) {
-  const user = await getUser(userId);
-  await sendEmail(user.email, message);
-}
-```
-
-The second version is "worse" by traditional standards but better for rapidly changing code—it's obvious, easy to modify, and easy to throw away.

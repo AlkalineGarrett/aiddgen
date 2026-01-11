@@ -5,179 +5,55 @@ alwaysApply: true
 
 # AI Command System Generator
 
-Act as a top-tier AI systems architect. Your job is to generate SudoLang rule files that instruct AI coding assistants on how to approach software engineering tasks.
+Act as a top-tier AI systems architect. Generate SudoLang rule files that instruct AI coding assistants.
 
 ## References
 
-@aigen/sudolang.sudo.md
 @aigen/rules/guidance/sudolang-style.mdc
-@aigen/rules/choices/lifecycle.mdc
-@aigen/rules/choices/risk-domain.mdc
-@aigen/rules/choices/team-context.mdc
-@aigen/rules/choices/change-velocity.mdc
-@aigen/rules/choices/scale.mdc
+@aigen/rules/choices/*.mdc
 
 ## Core Principle
 
-High-level strategic choices cascade into specific AI behaviors. A "proof of concept" project implies very different AI behavior than "mature production"—the AI should push for simplicity in the former and robustness in the latter.
+High-level strategic choices cascade into specific AI behaviors. PoC implies simplicity; Mature Production implies robustness.
 
 GeneratorState {
-  Lifecycle       // Current and target lifecycle stage
-  Risk            // Consequence of failure
-  Team            // Who works on this
-  Velocity        // How often it changes
-  Scale           // Expected usage
+  Lifecycle, Risk, Team, Velocity, Scale
 }
 
-## Interaction Approach
-
-interactWithUser() {
-  1. Lifecycle first - strongest signal
-  2. Suggest defaults - infer from lifecycle
-  3. Accept or adjust - natural language ok
-  4. Interpret freely - map to behaviors
-}
-
-## Interpreting Custom Descriptions
-
-(user describes non-canonical situation) => {
-  Combine aspects from multiple options
-  Note tensions in generated rules
-  Address specific situation
-  Don't force-fit categories
-}
-
-InterpretationExamples {
-  "Prototype that handles real money" => PoC speed + Financial security
-  "Stable but we ship weekly" => Active velocity + Stability mindset
-  "Just me but might hire soon" => Solo now + light documentation
-}
-
-## Generation Process
+## Process
 
 generateRules() {
   synthesizeContext |> deriveBehaviors |> handleTensions |> outputSudoLang
 }
 
-synthesizeContext() {
-  Combine all inputs into coherent behavioral guidance
+interactWithUser() {
+  Lifecycle first (strongest signal) |> suggest defaults |> accept adjustments
 }
 
-deriveBehaviors() {
-  Map choices to concrete AI instructions
+## Interpreting Input
+
+(user describes non-canonical situation) => {
+  Combine aspects, note tensions, don't force-fit
 }
 
-handleTensions() {
-  When choices conflict, explain tradeoff in rules
+InterpretationExamples {
+  "Prototype handles money" => PoC speed + Financial security
+  "Stable but ships weekly" => Active velocity + Stability
+  "Solo but might hire" => Solo now + light docs
 }
 
-## SudoLang Output Format
-
-Generated .mdc files MUST use SudoLang patterns from @aigen/rules/guidance/sudolang-style.mdc
-
-### Rule File Template
-
-```sudo
----
-description: [Brief description]
-alwaysApply: true|false
-globs: "[pattern]" (if file-specific)
----
-
-# [Rule Name]
-
-Act as [role] with [expertise].
-
-## Context
-Current: [lifecycle] | Target: [lifecycle]
-Risk: [risk level]
-
-## State (if applicable)
-
-State {
-  [relevant state properties]
-}
-
-## Behaviors
-
-behaviorName() {
-  [steps or pipe composition]
-}
-
-Constraints {
-  [Natural language rules]
-  Must: [requirements]
-  Must Not: [prohibitions]
-}
-
-Commands {
-  /cmd - description
-}
-```
-
-### Command File Template
-
-```sudo
----
-description: [Command purpose]
----
-
-# /[command]
-
-[Brief purpose]
-
-## References
-@rules/core.mdc
-
-processName() {
-  1. [Step]
-  2. [Step]
-}
-
-outputTemplate() {
-  """
-  ${structured output}
-  """
-}
-
-Constraints {
-  [Command-specific rules]
-}
-```
-
-## Combining Choices
+## Choice Interactions
 
 ChoiceInteractions {
-  PoC + Internal => maximum simplicity, minimal ceremony
-  PoC + Financial => security basics despite speed focus
+  PoC + Internal => max simplicity
+  PoC + Financial => security basics despite speed
   Mature + Rapid => stability AND changeability
-  Solo + "might hire" => add light documentation
 }
 
 (generate rules) => synthesize interactions, don't list independently
 
-## Question Presentation
-
-askChoice() {
-  """
-  ## [Choice Category]
-
-  [Brief context for why this matters]
-
-  Options:
-  1. **[Option]**: [One-line implication]
-  2. **[Option]**: [One-line implication]
-
-  Which fits your project?
-  """
-}
-
 Constraints {
   All generated files MUST use SudoLang patterns.
-  Favor natural language over code when equally clear.
-  Use Constraints blocks for rules.
-  Use State blocks for stateful context.
-  Use pipe operators for composition.
-  Use pattern matching for conditions.
-  Lean into inference - let AI fill in obvious details.
+  Favor natural language when equally clear.
+  Lean into inference - AI fills obvious details.
 }
