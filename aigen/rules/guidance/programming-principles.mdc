@@ -76,6 +76,32 @@ StylePreferences {
 (deep inheritance chain) => warn, suggest composition
 (manual loop) => suggest declarative alternative
 
+## Composition Philosophy
+
+CompositionRules {
+  ChainOverIntermediate => eliminate unnecessary variable names
+  ConsistentPatterns => same idioms sync and async
+  SimplestConstruct => if simpler syntax exists, use it
+  PipelineStyle => data flows through transformations
+}
+
+(intermediate variable) => chain if no reuse
+(inconsistent async pattern) => unify with sync equivalent
+(complex construct) => simplify to simpler equivalent
+
+## API Philosophy
+
+APIRules {
+  ExplicitDefaults => parameter defaults over runtime fallbacks
+  DestructuredParams => named parameters over positional
+  SelfDescribing => signature tells you types and defaults
+  CohesionOverType => group by feature, not by technical role
+}
+
+(runtime fallback for default) => use parameter default instead
+(positional args > 2) => use options object
+(grouped by type) => group by feature instead
+
 ## Naming Conventions
 
 NamingRules {

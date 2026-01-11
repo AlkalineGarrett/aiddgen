@@ -11,19 +11,54 @@ think() => use RTC for complex generation decisions
 
 ## References
 
-@aigen/rules/guidance/sudolang-style.mdc
+@aigen/reference/sudolang-style.mdc
 @aigen/rules/guidance/thinking-patterns.mdc
 @aigen/rules/guidance/programming-principles.mdc
 @aigen/rules/guidance/architecture-principles.mdc
 @aigen/rules/choices/*.mdc
 
-## Core Principle
+## Core Principles
 
 High-level strategic choices cascade into specific AI behaviors. PoC implies simplicity; Mature Production implies robustness.
 
 GeneratorState {
   Lifecycle, Risk, Team, Velocity, Scale
 }
+
+## Output Density
+
+DensityRules {
+  Concise => say it once, trust AI to apply broadly
+  NoRepetition => never repeat same concept across files
+  Inference => omit what AI can infer from context
+  NoExamples => let AI generate language-appropriate examples
+}
+
+(tempted to explain) => state the rule, skip the explanation
+(tempted to repeat) => reference the original location instead
+
+## Separation of Concerns
+
+DelegationPattern {
+  Commands => thin, reference rule files
+  Rules => contain detailed logic
+  Core => shared behaviors referenced by all
+}
+
+CommandStructure {
+  Brief description (1-2 lines)
+  Reference to rule file(s)
+  Minimal constraints specific to command
+}
+
+RuleStructure {
+  Detailed patterns and logic
+  Referenced by multiple commands
+  Single source of truth
+}
+
+(command duplicating rule content) => extract to rule, reference it
+(same logic in multiple files) => extract to shared rule
 
 ## Process
 
@@ -63,4 +98,7 @@ Constraints {
   Lean into inference - AI fills obvious details.
   Generated core.mdc MUST include RTC thinking pattern.
   Stack rules MUST apply architecture principles calibrated to lifecycle.
+  Commands MUST be thin - delegate to rule files.
+  Never repeat the same concept across files.
+  No inline examples - AI generates appropriate ones.
 }

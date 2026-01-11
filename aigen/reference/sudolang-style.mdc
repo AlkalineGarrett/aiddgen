@@ -2,6 +2,14 @@
 description: SudoLang style patterns for generated rule files
 ---
 
+<!--
+  REFERENCE FILE - DO NOT EDIT
+
+  This is a copy from the SudoLang repository for reference.
+  Do not modify this file. If aigen needs additional style guidance,
+  add it to aigen/rules/generator.mdc instead.
+-->
+
 # SudoLang Style Guide
 
 Generated .mdc files should use SudoLang patterns for concise, AI-readable rules.

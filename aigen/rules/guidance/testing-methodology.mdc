@@ -6,6 +6,19 @@ description: Language-agnostic testing methodology for generated stack rules
 
 When generating testing rules, incorporate these principles adapted to the specific test framework.
 
+## Testing Philosophy
+
+TestingPhilosophy {
+  ArchitectureEnablesTesting => good separation minimizes mocking needs
+  PreferBuiltIn => use framework's tools before adding dependencies
+  Determinism => control all inputs (time, randomness, IO)
+  IntegrationAtBoundaries => mock only at system edges, not between internal modules
+}
+
+(extensive mocking required) => architecture problem, improve separation
+(adding test utility dep) => check if framework provides equivalent
+(flaky test) => likely non-deterministic input, isolate and control
+
 ## The 5 Questions
 
 Every test must answer:
@@ -110,6 +123,22 @@ sagaTestPattern() {
   assert gen.next().value === call(fetchUser, '42')
   assert gen.next(mockUser).value === put(userLoaded(mockUser))
   """
+}
+
+## Framework Tools
+
+When generating stack-specific testing rules, prefer built-in utilities:
+
+BuiltInPreference {
+  Spies => framework's built-in spy/stub utilities
+  Mocking => framework's module mock system
+  Timers => framework's fake timers for time-dependent code
+  Fixtures => framework's fixture system over custom setup
+}
+
+PartialMocking {
+  Pattern => import real, override specific
+  Rationale => preserve integration, mock only boundaries
 }
 
 ## Lifecycle Calibration
