@@ -2,9 +2,9 @@
 description: List all AI command system generator commands
 ---
 
-# /aigen-help
+# /aiddgen-help
 
-Display available aigen commands and workflow.
+Display available aiddgen commands and workflow.
 
 ## Purpose
 
@@ -12,36 +12,36 @@ Generate a customized AI command system for your project. Generated commands and
 
 ## Commands
 
-AigenCommands {
-  /aigen-init => "Initialize: describe project, get complete command system"
-  /aigen-stack => "Add technology-specific rules (React, Python, etc.)"
-  /aigen-add-command => "Add a custom command beyond defaults"
-  /aigen-add-rule => "Add a custom rule for specific AI behaviors"
-  /aigen-status => "Show current configuration"
-  /aigen-help => "Show this help"
+AiddgenCommands {
+  /aiddgen-init => "Initialize: describe project, get complete command system"
+  /aiddgen-stack => "Add technology-specific rules (React, Python, etc.)"
+  /aiddgen-add-command => "Add a custom command beyond defaults"
+  /aiddgen-add-rule => "Add a custom rule for specific AI behaviors"
+  /aiddgen-status => "Show current configuration"
+  /aiddgen-help => "Show this help"
 }
 
 ## Workflow
 
 workflow() {
-  1. /aigen-init
+  1. /aiddgen-init
      AI analyzes codebase, estimates lifecycle
      You verify and set target lifecycle
      Generates commands calibrated to context
 
-  2. /aigen-stack (optional)
+  2. /aiddgen-stack (optional)
      Describe tech stack for technology-specific guidance
 
   3. Done!
      AI command system ready to use
 
-  4. Later: re-run /aigen-init when transitioning lifecycle stages
+  4. Later: re-run /aiddgen-init when transitioning lifecycle stages
 }
 
 ## What Gets Generated
 
 GeneratedOutput {
-  /aigen-init => {
+  /aiddgen-init => {
     rules/core.mdc => "AI behaviors calibrated to lifecycle, risk, team"
     commands/*.md => "plan, task, review, commit, explain, debug, plus context-specific"
   }
@@ -65,16 +65,16 @@ showHelp() {
   ## AI Command System Generator
 
   ### Commands
-  - `/aigen-init` - Initialize command system
-  - `/aigen-stack` - Add technology rules
-  - `/aigen-add-command` - Add custom command
-  - `/aigen-add-rule` - Add custom rule
-  - `/aigen-status` - Show configuration
-  - `/aigen-help` - This help
+  - `/aiddgen-init` - Initialize command system
+  - `/aiddgen-stack` - Add technology rules
+  - `/aiddgen-add-command` - Add custom command
+  - `/aiddgen-add-rule` - Add custom rule
+  - `/aiddgen-status` - Show configuration
+  - `/aiddgen-help` - This help
 
   ### Quick Start
-  1. Run `/aigen-init` to analyze and configure
-  2. Run `/aigen-stack` to add tech-specific rules
+  1. Run `/aiddgen-init` to analyze and configure
+  2. Run `/aiddgen-stack` to add tech-specific rules
   3. Use generated commands in your project
   """
 }

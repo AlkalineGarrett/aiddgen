@@ -2,14 +2,14 @@
 description: Generate a custom rule for specific AI behaviors
 ---
 
-# /aigen-add-rule
+# /aiddgen-add-rule
 
 Generate a custom rule for AI behaviors not covered by defaults.
 
 ## References
 
-@aigen/rules/generator.mdc
-@aigen/rules/guidance/sudolang-style.mdc
+@aiddgen/rules/generator.mdc
+@aiddgen/reference/sudolang-style.mdc
 
 ## Process
 

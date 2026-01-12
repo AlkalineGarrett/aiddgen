@@ -2,21 +2,21 @@
 description: Initialize a new AI command system through guided conversation
 ---
 
-# /aigen-init
+# /aiddgen-init
 
 Initialize or update an AI command system calibrated to project context.
 
 ## References
 
-@aigen/rules/generator.mdc
-@aigen/rules/guidance/sudolang-style.mdc
-@aigen/rules/choices/lifecycle.mdc
-@aigen/rules/choices/risk-domain.mdc
-@aigen/rules/choices/team-context.mdc
-@aigen/rules/choices/change-velocity.mdc
-@aigen/rules/choices/scale.mdc
-@aigen/rules/guidance/product-management.mdc
-@aigen/rules/guidance/task-lifecycle.mdc
+@aiddgen/rules/generator.mdc
+@aiddgen/reference/sudolang-style.mdc
+@aiddgen/rules/choices/lifecycle.mdc
+@aiddgen/rules/choices/risk-domain.mdc
+@aiddgen/rules/choices/team-context.mdc
+@aiddgen/rules/choices/change-velocity.mdc
+@aiddgen/rules/choices/scale.mdc
+@aiddgen/rules/guidance/product-management.mdc
+@aiddgen/rules/guidance/task-lifecycle.mdc
 
 ## State
 
@@ -213,7 +213,7 @@ IncludeByContext {
 generateCommands() {
   For each command to include:
     1. Reference core.mdc
-    2. Use SudoLang patterns from @aigen/rules/guidance/sudolang-style.mdc
+    2. Use SudoLang patterns from @aiddgen/reference/sudolang-style.mdc
     3. Adapt depth to lifecycle/risk
     4. Include appropriate constraints
 }
@@ -248,9 +248,9 @@ reportCompletion() {
 
   ${transitionNote}
 
-  Ready to use! Run /aigen-stack to add technology-specific rules.
+  Ready to use! Run /aiddgen-stack to add technology-specific rules.
 
-  To update later: Run /aigen-init again to reassess.
+  To update later: Run /aiddgen-init again to reassess.
   """
 }
 

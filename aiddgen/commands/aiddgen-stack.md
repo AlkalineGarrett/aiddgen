@@ -2,21 +2,21 @@
 description: Generate technology-specific rules based on your stack
 ---
 
-# /aigen-stack
+# /aiddgen-stack
 
 Generate technology-specific rules calibrated to lifecycle context.
 
 ## References
 
-@aigen/rules/generator.mdc
-@aigen/rules/guidance/sudolang-style.mdc
-@aigen/rules/guidance/programming-principles.mdc
-@aigen/rules/guidance/testing-methodology.mdc
-@aigen/rules/guidance/security-patterns.mdc
+@aiddgen/rules/generator.mdc
+@aiddgen/reference/sudolang-style.mdc
+@aiddgen/rules/guidance/programming-principles.mdc
+@aiddgen/rules/guidance/testing-methodology.mdc
+@aiddgen/rules/guidance/security-patterns.mdc
 
 ## Prerequisites
 
-Run /aigen-init first to establish strategic context.
+Run /aiddgen-init first to establish strategic context.
 
 ## Process
 
@@ -222,7 +222,7 @@ reportCompletion() {
   appropriately for your project's stage.
 
   To update after lifecycle transition:
-    Run /aigen-stack again after updating /aigen-init
+    Run /aiddgen-stack again after updating /aiddgen-init
   """
 }
 

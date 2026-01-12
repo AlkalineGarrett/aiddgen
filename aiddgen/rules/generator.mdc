@@ -1,5 +1,5 @@
 ---
-description: Core behavior for the aigen command system
+description: Core behavior for the aiddgen command system
 alwaysApply: true
 ---
 
@@ -11,12 +11,12 @@ think() => use RTC for complex generation decisions
 
 ## References
 
-@aigen/reference/sudolang-style.mdc
-@aigen/rules/guidance/thinking-patterns.mdc
-@aigen/rules/guidance/programming-principles.mdc
-@aigen/rules/guidance/architecture-principles.mdc
-@aigen/rules/guidance/spec-driven-generation.mdc
-@aigen/rules/choices/*.mdc
+@aiddgen/reference/sudolang-style.mdc
+@aiddgen/rules/guidance/thinking-patterns.mdc
+@aiddgen/rules/guidance/programming-principles.mdc
+@aiddgen/rules/guidance/architecture-principles.mdc
+@aiddgen/rules/guidance/spec-driven-generation.mdc
+@aiddgen/rules/choices/*.mdc
 
 ## Core Principles
 

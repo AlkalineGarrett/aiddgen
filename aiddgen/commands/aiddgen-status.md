@@ -2,7 +2,7 @@
 description: Show current configuration and what's been generated
 ---
 
-# /aigen-status
+# /aiddgen-status
 
 Show current AI command system configuration and generated files.
 
@@ -21,7 +21,7 @@ notInitializedMessage() {
   """
   No AI command system found.
 
-  Run /aigen-init to create one.
+  Run /aiddgen-init to create one.
   """
 }
 
@@ -65,10 +65,10 @@ statusOutput() {
     ${commandsList}
 
   Available Actions:
-    /aigen-stack       - Add more technology rules
-    /aigen-add-command - Create a new command
-    /aigen-add-rule    - Create a custom rule
-    /aigen-init        - Update lifecycle
+    /aiddgen-stack       - Add more technology rules
+    /aiddgen-add-command - Create a new command
+    /aiddgen-add-rule    - Create a custom rule
+    /aiddgen-init        - Update lifecycle
   """
 }
 
@@ -84,12 +84,12 @@ transitionStatus() {
 checkForSuggestions() {
   (current == target && codebaseImproved) => """
   Note: Your codebase appears to have reached ${target} practices.
-  Consider running /aigen-init to reassess and set a new target.
+  Consider running /aiddgen-init to reassess and set a new target.
   """
 
   (rules exist && context incomplete) => """
   Warning: core.mdc exists but may be incomplete.
-  Run /aigen-init to establish strategic context.
+  Run /aiddgen-init to establish strategic context.
   """
 }
 

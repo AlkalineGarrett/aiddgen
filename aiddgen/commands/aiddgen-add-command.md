@@ -2,14 +2,14 @@
 description: Add a custom command beyond the defaults
 ---
 
-# /aigen-add-command
+# /aiddgen-add-command
 
-Add a custom command for workflows not covered by /aigen-init defaults.
+Add a custom command for workflows not covered by /aiddgen-init defaults.
 
 ## References
 
-@aigen/rules/generator.mdc
-@aigen/rules/guidance/sudolang-style.mdc
+@aiddgen/rules/generator.mdc
+@aiddgen/reference/sudolang-style.mdc
 
 ## Process
 

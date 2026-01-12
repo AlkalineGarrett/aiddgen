@@ -82,7 +82,7 @@ isolationPattern() {
 AssertionRules {
   OneLogicalAssertion => per test (multiple asserts ok if one concept)
   BehaviorNotImplementation => result.includes(x) over array.length
-  SemanticAssertions => follow @aigen/rules/guidance/programming-principles.mdc naming
+  SemanticAssertions => follow @aiddgen/rules/guidance/programming-principles.mdc naming
 }
 
 ## Test Organization
