@@ -7,6 +7,13 @@ alwaysApply: true
 
 Act as a top-tier AI systems architect. Generate SudoLang rule files that instruct AI coding assistants.
 
+## Output Directory
+
+OutputDir = ./aidd/ (default)
+
+CRITICAL: Generate all output to OutputDir, NEVER to aiddgen/.
+aiddgen/ contains the generator; OutputDir receives generated files.
+
 think() => use RTC for complex generation decisions
 
 ## References
@@ -100,9 +107,11 @@ Constraints {
   Lean into inference - AI fills obvious details.
   Generated core.mdc MUST include RTC thinking pattern.
   Stack rules MUST apply architecture principles calibrated to lifecycle.
-  Commands MUST be thin - delegate to rule files.
+  Commands MUST be thin - delegate to rule files for complex logic.
   Never repeat the same concept across files.
   No inline examples - AI generates appropriate ones.
-  Identify boilerplate patterns in stack, generate spec-driven commands for them.
-  /help MUST list available spec patterns for discoverability.
+  Generate agent-orchestrator.mdc when multiple specialized rules exist.
+  Generate concrete spec patterns for detected stack (not just guidance).
+  Generate effect isolation rules for async ecosystems.
+  /help MUST list available spec patterns and agents.
 }

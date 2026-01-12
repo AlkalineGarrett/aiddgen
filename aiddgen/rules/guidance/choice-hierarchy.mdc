@@ -11,8 +11,8 @@ User choices form a hierarchy where higher levels inform lower-level defaults.
 ChoiceLevels {
   L1_Lifecycle => PoC | Throwaway | TeamTool | MVP | EarlyProduction | MatureProduction | Legacy
   L2_Params => Risk, Team, Velocity, Scale
-  L3_Ecosystem => Python | Node | Go | Rust | Ruby | Java | CSharp | Other
-  L4_Stack => Framework, Database, TestRunner, Deployment, CICD
+  L3_Ecosystem => language/runtime
+  L4_Stack => Framework, StateManagement, Database, TestRunner, Deployment, CICD
   L5_Libraries => specific packages within stack
 }
 

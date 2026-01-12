@@ -16,7 +16,11 @@ Initialize or update an AI command system calibrated to project context.
 ## Process
 
 initProcess() {
-  checkExisting |> gatherL1L2 |> generateChoices |> generateCore |> generateCommands |> runStack
+  checkExisting |> gatherL1L2 |> generateChoices |> generateCore |> generateCommands |> generateAgentOrchestrator |> runStack
+}
+
+checkExisting() {
+  (OutputDir exists) => askUpdateOrFresh()
 }
 
 ## Gather L1-L2
@@ -60,8 +64,17 @@ generateCore() {
 
 generateCommands() {
   AlwaysInclude { /help, /plan, /task, /review, /commit, /explain, /debug }
-  IncludeByContext { based on lifecycle and risk level }
-  Calibrate depth to context
+  IncludeByContext {
+    TeamTool+ => /discover, /execute, /log
+    MVP+ => /feature, /journey
+    BusinessRisk+ => /security-review
+  }
+  Commands are thin; generate separate rule files for complex logic
+}
+
+generateAgentOrchestrator() {
+  (multiple specialized rules) => generate [output]/rules/agent-orchestrator.mdc
+  Lists available agents, dispatches based on request context
 }
 
 ## Stack Integration
