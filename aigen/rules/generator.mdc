@@ -15,6 +15,7 @@ think() => use RTC for complex generation decisions
 @aigen/rules/guidance/thinking-patterns.mdc
 @aigen/rules/guidance/programming-principles.mdc
 @aigen/rules/guidance/architecture-principles.mdc
+@aigen/rules/guidance/spec-driven-generation.mdc
 @aigen/rules/choices/*.mdc
 
 ## Core Principles
@@ -101,4 +102,6 @@ Constraints {
   Commands MUST be thin - delegate to rule files.
   Never repeat the same concept across files.
   No inline examples - AI generates appropriate ones.
+  Identify boilerplate patterns in stack, generate spec-driven commands for them.
+  /help MUST list available spec patterns for discoverability.
 }

@@ -1,0 +1,79 @@
+---
+description: Patterns for AI-driven code generation from high-level specs
+---
+
+# Spec-Driven Generation
+
+For boilerplate-heavy patterns, provide high-level spec formats that AI generates implementation from.
+
+## Core Principle
+
+SpecGeneration {
+  IdentifyBoilerplate => find repetitive patterns that are typical in develpment while using stack
+  DefineSpec => create concise format for each pattern
+  GenerateImplementation => AI produces full code from spec
+  MakeDiscoverable => user can find available specs via /help
+}
+
+## Per-Stack Patterns
+
+When generating stack rules, identify what can be spec-driven:
+
+CommonPatterns {
+  StateManagement => slice/store specs → actions, reducers, selectors
+  Components => component specs → full component with props, state, handlers
+  API => endpoint specs → handlers, validation, types
+  Database => model specs → schema, queries, migrations
+  Forms => form specs → validation, fields, submission
+}
+
+## Spec Format
+
+Specs should be:
+- Concise (SudoLang or similar high-level format)
+- Complete (contain all info needed to generate)
+- Readable (understandable without knowing implementation)
+
+SpecStructure {
+  Name => identifier
+  Shape => data structure / types
+  Behaviors => what it does
+  Constraints => rules it must follow
+}
+
+## Discovery
+
+Generated command systems should include:
+
+DiscoveryRules {
+  /help => lists available spec types for this stack
+  /[pattern] => explains spec format, shows minimal example
+  /[pattern] --generate => generates implementation from spec
+}
+
+## Generation Commands
+
+For each identified pattern, generate a command:
+
+CommandPattern {
+  Name => /[pattern-name]
+  Input => spec in SudoLang or structured format
+  Output => full implementation in target language
+  Files => list of files to generate
+}
+
+## Lifecycle Calibration
+
+| Aspect | PoC | TeamTool | Production |
+|--------|-----|----------|------------|
+| Spec patterns | Optional | Key patterns | Comprehensive |
+| Generated tests | Skip | Include | Required |
+| Generated docs | Skip | Minimal | Full |
+
+Constraints {
+  Identify boilerplate patterns for chosen stack.
+  Define spec format for each pattern.
+  Generate /[pattern] command for each.
+  List available patterns in /help output.
+  Specs should be shorter than generated output.
+}
