@@ -12,26 +12,95 @@ Act as a top-tier AI systems architect. Generate SudoLang rule files that instru
 OutputDir = ./aidd/ (default)
 
 CRITICAL: Generate all output to OutputDir, NEVER to aiddgen/.
-aiddgen/ contains the generator; OutputDir receives generated files.
-
-think() => use RTC for complex generation decisions
 
 ## References
 
 @aiddgen/reference/sudolang-style.mdc
-@aiddgen/rules/guidance/thinking-patterns.mdc
-@aiddgen/rules/guidance/programming-principles.mdc
-@aiddgen/rules/guidance/architecture-principles.mdc
-@aiddgen/rules/guidance/spec-driven-generation.mdc
-@aiddgen/rules/guidance/choice-hierarchy.mdc
+@aiddgen/rules/choices/hierarchy.mdc
 @aiddgen/rules/choices/*.mdc
+@aiddgen/rules/guidance/*.mdc
 
-## Core Principles
+## Init Process
 
-High-level strategic choices cascade into specific AI behaviors. PoC implies simplicity; Mature Production implies robustness.
+checkExisting() {
+  (OutputDir exists) => askUpdateOrFresh
+}
 
-GeneratorState {
-  Lifecycle, Risk, Team, Velocity, Scale
+gatherL1L2() {
+  analyzeCodebase |> verifyWithUser |> askTarget |> suggestL2Defaults
+}
+
+analyzeCodebase() {
+  (new/empty repo) => askProjectType
+  (existing code) => detectLifecycle from signals
+}
+
+suggestL2Defaults() {
+  Infer L2 from L1 per @hierarchy.mdc L2FromL1
+  Mark each as explicit or inferred
+}
+
+generateAll() {
+  generateChoices |> generateCore |> generateCommands |> generateAgentOrchestrator
+}
+
+generateCommands() {
+  Include per @hierarchy.mdc AlwaysIncludeCommands + CommandsByContext
+  Commands are thin; generate separate rule files for complex logic
+}
+
+generateAgentOrchestrator() {
+  (multiple specialized rules) => generate rules/agent-orchestrator.mdc
+}
+
+## Stack Process
+
+detectOrAskL3L5() {
+  (no source code) => askEcosystem |> recommendStack
+  (source code exists) => analyzeStack |> presentFindings
+}
+
+analyzeStack() {
+  Detect each of @hierarchy.mdc L4Components
+  Default StateManagement if app has state needs
+}
+
+generateStackRules() {
+  For each confirmed technology => rules/stack/${tech}.mdc
+  Calibrate to L1-L2 context
+}
+
+generatePatterns() {
+  For each L4 component => identify boilerplate => rules/patterns/${pattern}.mdc + commands/${pattern}.md
+}
+
+generateEffectRules() {
+  (async in stack) => rules/effects.mdc with saga-style patterns
+}
+
+## Add Command Process
+
+addCommandProcess() {
+  askPurpose |> inferStructure |> confirm |> generateCommand
+}
+
+## Add Rule Process
+
+addRuleProcess() {
+  askWhat |> askGuidance |> inferStructure |> generateRule
+}
+
+## Status Process
+
+statusProcess() {
+  (no choices.mdc) => "Run /aiddgen-init first"
+  (choices.mdc exists) => displayChoices |> listGenerated
+}
+
+## Help Process
+
+helpProcess() {
+  Display @hierarchy.mdc AiddgenCommands
 }
 
 ## Output Density
@@ -40,7 +109,6 @@ DensityRules {
   Concise => say it once, trust AI to apply broadly
   NoRepetition => never repeat same concept across files
   Inference => omit what AI can infer from context
-  NoExamples => let AI generate language-appropriate examples
 }
 
 (tempted to explain) => state the rule, skip the explanation
@@ -54,64 +122,16 @@ DelegationPattern {
   Core => shared behaviors referenced by all
 }
 
-CommandStructure {
-  Brief description (1-2 lines)
-  Reference to rule file(s)
-  Minimal constraints specific to command
-}
-
-RuleStructure {
-  Detailed patterns and logic
-  Referenced by multiple commands
-  Single source of truth
-}
-
 (command duplicating rule content) => extract to rule, reference it
 (same logic in multiple files) => extract to shared rule
 
-## Process
-
-generateRules() {
-  synthesizeContext |> deriveBehaviors |> handleTensions |> outputSudoLang
-}
-
-interactWithUser() {
-  Lifecycle first (strongest signal) |> suggest defaults |> accept adjustments
-}
-
-## Interpreting Input
-
-(user describes non-canonical situation) => {
-  Combine aspects, note tensions, don't force-fit
-}
-
-InterpretationExamples {
-  "Prototype handles money" => PoC speed + Financial security
-  "Stable but ships weekly" => Active velocity + Stability
-  "Solo but might hire" => Solo now + light docs
-}
-
-## Choice Interactions
-
-ChoiceInteractions {
-  PoC + Internal => max simplicity
-  PoC + Financial => security basics despite speed
-  Mature + Rapid => stability AND changeability
-}
-
-(generate rules) => synthesize interactions, don't list independently
-
 Constraints {
   All generated files MUST use SudoLang patterns.
-  Favor natural language when equally clear.
   Lean into inference - AI fills obvious details.
   Generated core.mdc MUST include RTC thinking pattern.
-  Stack rules MUST apply architecture principles calibrated to lifecycle.
-  Commands MUST be thin - delegate to rule files for complex logic.
+  Commands MUST be thin - delegate to rule files.
   Never repeat the same concept across files.
-  No inline examples - AI generates appropriate ones.
-  Generate agent-orchestrator.mdc when multiple specialized rules exist.
-  Generate concrete spec patterns for detected stack (not just guidance).
-  Generate effect isolation rules for async ecosystems.
+  Lists (L4Components, commands, etc.) defined once in hierarchy.mdc.
+  Generate concrete spec patterns for detected stack.
   /help MUST list available spec patterns and agents.
 }

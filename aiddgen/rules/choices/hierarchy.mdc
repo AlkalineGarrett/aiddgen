@@ -1,0 +1,77 @@
+---
+description: Single source of truth for choice hierarchy and component lists
+alwaysApply: true
+---
+
+# Choice Hierarchy
+
+User choices form a hierarchy where higher levels inform lower-level defaults.
+
+## Levels
+
+ChoiceLevels {
+  L1_Lifecycle => PoC | Throwaway | TeamTool | MVP | EarlyProduction | MatureProduction | Legacy
+  L2_Params => Risk, Team, Velocity, Scale
+  L3_Ecosystem => language/runtime
+  L4_Stack => L4Components
+  L5_Libraries => specific packages within stack
+}
+
+L4Components {
+  Framework
+  StateManagement
+  Database
+  TestRunner
+  Deployment
+  CICD
+}
+
+## Cascade Rules
+
+CascadeRules {
+  Higher informs lower => Lifecycle shapes reasonable defaults
+  Explicit overrides inferred => user choice beats cascade
+  Record both => store explicit AND inferred separately
+}
+
+## L2 Inference from L1
+
+L2FromL1 {
+  PoC | Throwaway => (Personal, Solo, Rapid, Local)
+  TeamTool => (Internal, Small, Active, Team)
+  MVP => (Business, Small, Active, Users)
+  EarlyProduction => (Business, Multiple, Active, Users)
+  MatureProduction => (Business+, Multiple, Measured, Organization)
+}
+
+## Aiddgen Commands
+
+AiddgenCommands {
+  /aiddgen-init => "Full setup: lifecycle + stack"
+  /aiddgen-stack => "Modify stack"
+  /aiddgen-add-command => "Add custom command"
+  /aiddgen-add-rule => "Add custom rule"
+  /aiddgen-status => "Show configuration"
+  /aiddgen-help => "This help"
+}
+
+## Generated Commands by Context
+
+AlwaysIncludeCommands { /help, /plan, /task, /review, /commit, /explain, /debug }
+
+CommandsByContext {
+  TeamTool+ => /discover, /execute, /log
+  MVP+ => /feature, /journey
+  BusinessRisk+ => /security-review
+}
+
+## Output Files
+
+OutputFiles {
+  choices.mdc => source of truth (L1-L5 with explicit/inferred markers)
+  rules/core.mdc => derived from L1 + L2
+  rules/stack/*.mdc => derived from L3-L5, calibrated to L1 + L2
+  rules/patterns/*.mdc => spec-driven generation patterns
+  rules/effects.mdc => effect isolation (if async in stack)
+  rules/agent-orchestrator.mdc => agent dispatch (if multiple specialized rules)
+}
