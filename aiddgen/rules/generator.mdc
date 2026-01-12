@@ -16,6 +16,7 @@ think() => use RTC for complex generation decisions
 @aiddgen/rules/guidance/programming-principles.mdc
 @aiddgen/rules/guidance/architecture-principles.mdc
 @aiddgen/rules/guidance/spec-driven-generation.mdc
+@aiddgen/rules/guidance/choice-hierarchy.mdc
 @aiddgen/rules/choices/*.mdc
 
 ## Core Principles

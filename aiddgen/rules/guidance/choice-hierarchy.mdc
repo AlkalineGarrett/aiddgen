@@ -1,0 +1,41 @@
+---
+description: Hierarchical structure of user choices for AI command system generation
+---
+
+# Choice Hierarchy
+
+User choices form a hierarchy where higher levels inform lower-level defaults.
+
+## Levels
+
+ChoiceLevels {
+  L1_Lifecycle => PoC | Throwaway | TeamTool | MVP | EarlyProduction | MatureProduction | Legacy
+  L2_Params => Risk, Team, Velocity, Scale
+  L3_Ecosystem => Python | Node | Go | Rust | Ruby | Java | CSharp | Other
+  L4_Stack => Framework, Database, TestRunner, Deployment, CICD
+  L5_Libraries => specific packages within stack
+}
+
+## Rules
+
+CascadeRules {
+  Higher informs lower => Lifecycle shapes reasonable defaults
+  Explicit overrides inferred => user choice beats cascade
+  Record both => store explicit AND inferred separately
+}
+
+## Inference Chains
+
+L2FromL1 {
+  PoC | Throwaway => (Personal, Solo, Rapid, Local)
+  TeamTool => (Internal, Small, Active, Team)
+  MVP => (Business, Small, Active, Users)
+  EarlyProduction => (Business, Multiple, Active, Users)
+  MatureProduction => (Business+, Multiple, Measured, Organization)
+}
+
+## Output Structure
+
+choices.mdc => source of truth (L1-L5 with explicit/inferred markers)
+core.mdc => derived from L1 + L2
+stack/*.mdc => derived from L3-L5, calibrated to L1 + L2

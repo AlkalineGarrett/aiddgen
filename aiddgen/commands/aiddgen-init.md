@@ -10,261 +10,76 @@ Initialize or update an AI command system calibrated to project context.
 
 @aiddgen/rules/generator.mdc
 @aiddgen/reference/sudolang-style.mdc
-@aiddgen/rules/choices/lifecycle.mdc
-@aiddgen/rules/choices/risk-domain.mdc
-@aiddgen/rules/choices/team-context.mdc
-@aiddgen/rules/choices/change-velocity.mdc
-@aiddgen/rules/choices/scale.mdc
-@aiddgen/rules/guidance/product-management.mdc
-@aiddgen/rules/guidance/task-lifecycle.mdc
-
-## State
-
-InitState {
-  OutputDir         // Where to generate (default: ./ai)
-  CurrentLifecycle  // Analyzed from codebase
-  TargetLifecycle   // User's goal
-  Risk              // Consequence of failure
-  Team              // Who works on this
-  Velocity          // How often it changes
-  Scale             // Expected usage
-  IsTransition      // CurrentLifecycle != TargetLifecycle
-}
+@aiddgen/rules/guidance/choice-hierarchy.mdc
+@aiddgen/rules/choices/*.mdc
 
 ## Process
 
 initProcess() {
-  checkExisting |> analyzeCodebase |> verifyWithUser |> askTarget |> suggestDefaults |> generateOutput
+  checkExisting |> gatherL1L2 |> generateChoices |> generateCore |> generateCommands |> runStack
 }
 
-## Step 1: Check Existing
+## Gather L1-L2
 
-checkExisting() {
-  (output dir exists) => askUpdateOrFresh()
+gatherL1L2() {
+  analyzeCodebase |> verifyWithUser |> askTarget |> suggestL2Defaults
 }
-
-askUpdateOrFresh() {
-  """
-  Found existing AI command system in ${outputDir}
-
-  Would you like to:
-  1. Update it (e.g., transitioning lifecycle stages)
-  2. Start fresh (replace existing)
-  """
-}
-
-## Step 2: Analyze Codebase
 
 analyzeCodebase() {
-  (new/empty repo) => askProjectType |> askStartingLifecycle
-  (existing code) => detectLifecycle |> gatherEvidence
+  (new/empty repo) => askProjectType
+  (existing code) => detectLifecycle from signals (tests, structure, CI, docs)
 }
-
-detectLifecycle() {
-  LifecycleSignals {
-    NoTests + MinimalStructure => PoC | Throwaway
-    SomeTests + BasicErrorHandling => TeamTool | MVP
-    GoodCoverage + CICD + Docs => EarlyProduction
-    ComprehensiveTests + Security + Monitoring => MatureProduction
-    OldPatterns + CautiousChanges => Legacy
-  }
-
-  Also examine:
-    README quality, error handling patterns, security practices
-    Documentation, git history, dependencies, CI/CD, logging
-}
-
-askProjectType() {
-  """
-  This appears to be a new project.
-
-  What are you building?
-  1. Web application
-  2. API / Backend service
-  3. CLI tool
-  4. Library / Package
-  5. Mobile app
-  6. Something else: [describe]
-  """
-}
-
-## Step 3: Verify With User
 
 verifyWithUser() {
-  """
-  Based on my analysis:
-
-  Current state appears to be: ${estimatedLifecycle}
-
-  Evidence:
-  - ${observation1}
-  - ${observation2}
-  - ${observation3}
-
-  Is this accurate? Or is the actual state different?
-
-  (Note: A codebase can have poor practices despite being in production,
-  or good practices despite being a prototype. Tell me the reality.)
-  """
+  Present estimated lifecycle with evidence, accept corrections
+  "A codebase can have poor practices despite being in production"
 }
-
-AcceptCorrections {
-  "It's actually in production but we have tech debt"
-  "It's a prototype but I'm being careful because it handles payments"
-  "That's right"
-}
-
-## Step 4: Ask Target
 
 askTarget() {
-  """
-  What lifecycle stage are you targeting?
-
-  1. Stay at current (${current}) - optimize for where you are
-  2. Proof of Concept - validate fast, likely throwaway
-  3. Throwaway Tool - solve immediate problem
-  4. Team Tool - used by a small known group
-  5. MVP - first version for real users
-  6. Early Production - real users, growing
-  7. Mature Production - stable, reliable, many depend on it
-  8. Legacy - maintain but not actively developing
-
-  Or describe your goal (e.g., "transition from MVP to early production")
-  """
+  Which lifecycle stage are you targeting?
+  Accept menu selection or free-form description
 }
 
-## Step 5: Suggest Defaults
-
-suggestDefaults() {
-  Based on target lifecycle, infer reasonable defaults for:
-    risk, team, velocity, scale
-
-  """
-  Based on "${targetLifecycle}", I suggest:
-
-  - Risk: ${risk} - ${reasoning}
-  - Team: ${team} - ${reasoning}
-  - Velocity: ${velocity} - ${reasoning}
-  - Scale: ${scale} - ${reasoning}
-
-  Accept these? Or tell me what's different about your situation.
-  """
-}
-
-LifecycleDefaults {
-  PoC | Throwaway => simpler options
-  Production | Mature => more rigorous options
-}
-
-## Custom Descriptions
-
-(user provides free-form text) => interpretCustomDescription()
-
-interpretCustomDescription() {
-  Look for:
-    Combinations that override defaults
-      "prototype but handles payments" => PoC + Financial risk
-    Transitions or future state
-      "might open source later" => note in rules
-    Context affecting multiple dimensions
-      "internal but company-wide" => Internal risk, Organization scale
-
-  Synthesize into coherent rules, not closest canonical option
+suggestL2Defaults() {
+  Infer L2 from target lifecycle per @choice-hierarchy.mdc InferenceChains
+  Present suggestions, accept overrides
+  Mark each as explicit or inferred
 }
 
 ## Output Generation
 
-generateOutput() {
-  generateCoreMdc |> generateCommands |> generateHelp |> reportCompletion
+generateChoices() {
+  Write [output]/choices.mdc per @choice-hierarchy.mdc choicesTemplate
 }
 
-### Core Rules
-
-generateCoreMdc() {
-  Write [output]/rules/core.mdc using SudoLang with:
-    1. Project context (current, target, transition goals)
-    2. Concrete behaviors (error handling, testing, security, docs, complexity)
-    3. Constraints (must/must not)
-    4. If transitioning: differentiate existing code (lenient) vs new code (target-grade)
-}
-
-### Commands
-
-AlwaysInclude {
-  /help => "List available commands"
-  /plan => "Review current plan, suggest next steps"
-  /task => "Break down and plan a task or feature"
-  /review => "Review code changes"
-  /commit => "Draft commit message"
-  /explain => "Explain code, architecture, or decisions"
-}
-
-IncludeByContext {
-  TeamTool+ => /discover, /story, /execute, /log, /status
-  MVP+ => /feature, /journey, /architect
-  BusinessRisk+ => /security-review
-  NotPrototype => /refactor
-  Always => /debug
-  LargeTeam | OpenSource => /onboard
-  TeamReview => /pr
-  EarlyProduction+ => /changelog
+generateCore() {
+  Derive [output]/rules/core.mdc from choices:
+    AI behavioral calibration from L1 + L2
+    Transition rules if current != target
 }
 
 generateCommands() {
-  For each command to include:
-    1. Reference core.mdc
-    2. Use SudoLang patterns from @aiddgen/reference/sudolang-style.mdc
-    3. Adapt depth to lifecycle/risk
-    4. Include appropriate constraints
+  AlwaysInclude { /help, /plan, /task, /review, /commit, /explain, /debug }
+  IncludeByContext { based on lifecycle and risk level }
+  Calibrate depth to context
 }
 
-CommandCalibration {
-  "PoC /review is lighter than Mature Production /review"
-  "Solo /commit is simpler than Team /commit"
-  "High-risk /security-review is more thorough"
+## Stack Integration
+
+runStack() {
+  Execute /aiddgen-stack flow inline to gather L3-L5
 }
 
 ## Completion
 
 reportCompletion() {
-  """
-  Created AI command system in ${outputDir}/
-
-  Generated:
-    rules/core.mdc       - Core AI behaviors
-    commands/
-      help.md            - /help
-      plan.md            - /plan
-      task.md            - /task
-      ${additionalCommands}
-
-  Your context:
-    Current lifecycle: ${currentLifecycle}
-    Target lifecycle:  ${targetLifecycle}
-    Risk: ${risk}
-    Team: ${team}
-    Velocity: ${velocity}
-    Scale: ${scale}
-
-  ${transitionNote}
-
-  Ready to use! Run /aiddgen-stack to add technology-specific rules.
-
-  To update later: Run /aiddgen-init again to reassess.
-  """
-}
-
-transitionNote() {
-  (isTransition) => """
-  Transition: ${current} → ${target}
-  AI will help you build ${target}-grade practices incrementally.
-  """
+  List generated files, show choices summary, note transition if applicable
 }
 
 Constraints {
   All generated files MUST use SudoLang patterns.
-  Synthesize choices into coherent behavior, not independent settings.
-  Ask one key question, infer the rest.
-  Accept free-form descriptions, not just menu selections.
-  Calibrate command depth to lifecycle and risk.
+  choices.mdc is source of truth; core.mdc derives from it.
+  Record explicit vs inferred for every choice.
+  Automatically flow into stack configuration.
+  Accept free-form descriptions, not just menus.
 }
