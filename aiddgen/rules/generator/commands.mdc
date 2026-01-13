@@ -1,0 +1,82 @@
+---
+description: Command generation logic and command lists
+---
+
+# Command Generation
+
+Generate thin commands that reference rule files.
+
+## Command Lists
+
+AlwaysIncludeCommands { /help, /plan, /task, /review, /commit, /explain, /debug }
+
+CommandsByContext {
+  TeamTool+ => /discover, /execute, /log
+  MVP+ => /feature, /journey
+  BusinessRisk+ => /security-review
+}
+
+CommandDescriptions {
+  /help => "List commands and agents"
+  /plan => "Review plan, suggest next steps"
+  /task => "Create epic, decompose into tasks"
+  /review => "Code review"
+  /commit => "Commit with conventional format"
+  /explain => "Explain code or concept"
+  /debug => "Debug issue"
+  /discover => "Product discovery"
+  /execute => "Execute task/epic"
+  /log => "Log changes"
+  /feature => "Plan and implement feature"
+  /journey => "Map user journey"
+  /security-review => "Security audit"
+}
+
+## Command-Rule Mapping
+
+CommandRules {
+  /task => rules/task-creator.mdc#createTask
+  /execute => rules/task-creator.mdc#executeTask
+  /review => rules/review.mdc#reviewProcess
+  /discover => rules/productmanager.mdc#discoverProcess
+  /feature => rules/productmanager.mdc#featureProcess
+  /journey => rules/productmanager.mdc#journeyProcess
+  /log => rules/log.mdc#logProcess
+  /security-review => rules/security.mdc#securityReviewProcess
+  /plan => rules/task-creator.mdc#planProcess
+  /commit => rules/core.mdc#commitProcess
+  /explain => rules/core.mdc#explainProcess
+  /debug => rules/core.mdc#debugProcess
+  /help => rules/agent-orchestrator.mdc#helpProcess
+}
+
+## Generation Process
+
+generateCommands(lifecycle, risk) {
+  commands = AlwaysIncludeCommands
+  (lifecycle >= TeamTool) => commands += CommandsByContext[TeamTool+]
+  (lifecycle >= MVP) => commands += CommandsByContext[MVP+]
+  (risk >= Business) => commands += CommandsByContext[BusinessRisk+]
+
+  For each command => generate commands/${name}.md per commandTemplate
+}
+
+## Command Template
+
+commandTemplate(name) {
+  """
+  ---
+  description: ${CommandDescriptions[name]}
+  ---
+
+  # /${name}
+
+  @${CommandRules[name]}
+  """
+}
+
+Constraints {
+  Commands are ultra-thin - frontmatter + title + rule reference only.
+  No process logic in commands - delegate entirely to rules.
+  Max 7 lines per command file.
+}

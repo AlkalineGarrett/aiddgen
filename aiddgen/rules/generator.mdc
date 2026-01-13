@@ -1,5 +1,5 @@
 ---
-description: Core behavior for the aiddgen command system
+description: Core orchestrator for the aiddgen command system
 alwaysApply: true
 ---
 
@@ -17,10 +17,28 @@ CRITICAL: Generate all output to OutputDir, NEVER to aiddgen/.
 
 @aiddgen/reference/sudolang-style.mdc
 @aiddgen/rules/choices/hierarchy.mdc
-@aiddgen/rules/choices/*.mdc
+@aiddgen/rules/generator/commands.mdc
+@aiddgen/rules/generator/rules.mdc
+@aiddgen/rules/generator/agents.mdc
+@aiddgen/rules/generator/stack.mdc
 @aiddgen/rules/guidance/*.mdc
 
+## Aiddgen Commands
+
+AiddgenCommands {
+  /aiddgen-init => "Full setup: lifecycle + stack"
+  /aiddgen-stack => "Modify stack"
+  /aiddgen-add-command => "Add custom command"
+  /aiddgen-add-rule => "Add custom rule"
+  /aiddgen-status => "Show configuration"
+  /aiddgen-help => "This help"
+}
+
 ## Init Process
+
+initProcess() {
+  checkExisting |> gatherL1L2 |> generateAll
+}
 
 checkExisting() {
   (OutputDir exists) => askUpdateOrFresh
@@ -36,52 +54,34 @@ analyzeCodebase() {
 }
 
 suggestL2Defaults() {
-  Infer L2 from L1 per @hierarchy.mdc L2FromL1
+  Infer L2 from L1 per @hierarchy.mdc#L2FromL1
   Mark each as explicit or inferred
 }
 
 generateAll() {
-  generateChoices |> generateCore |> generateCommands |> generateAgentOrchestrator
-}
-
-generateCommands() {
-  Include per @hierarchy.mdc AlwaysIncludeCommands + CommandsByContext
-  Commands are thin; generate separate rule files for complex logic
-}
-
-generateAgentOrchestrator() {
-  (multiple specialized rules) => generate rules/agent-orchestrator.mdc
+  generateChoices
+  |> @rules.mdc#generateCore
+  |> @stack.mdc#generateStackRules
+  |> @stack.mdc#generatePatterns
+  |> @stack.mdc#generateEffectRules
+  |> @rules.mdc#generateSupportingRules
+  |> @commands.mdc#generateCommands
+  |> @agents.mdc#generateAgentOrchestrator
 }
 
 ## Stack Process
 
-detectOrAskL3L5() {
-  (no source code) => askEcosystem |> recommendStack
-  (source code exists) => analyzeStack |> presentFindings
-}
-
-analyzeStack() {
-  Detect each of @hierarchy.mdc L4Components
-  Default StateManagement if app has state needs
-}
-
-generateStackRules() {
-  For each confirmed technology => rules/stack/${tech}.mdc
-  Calibrate to L1-L2 context
-}
-
-generatePatterns() {
-  For each L4 component => identify boilerplate => rules/patterns/${pattern}.mdc + commands/${pattern}.md
-}
-
-generateEffectRules() {
-  (async in stack) => rules/effects.mdc with saga-style patterns
+stackProcess() {
+  @stack.mdc#detectOrAskL3L5
+  |> @stack.mdc#generateStackRules
+  |> @stack.mdc#generatePatterns
+  |> @agents.mdc#generateAgentOrchestrator
 }
 
 ## Add Command Process
 
 addCommandProcess() {
-  askPurpose |> inferStructure |> confirm |> generateCommand
+  askPurpose |> inferStructure |> confirm |> @commands.mdc#generateCommand
 }
 
 ## Add Rule Process
@@ -100,7 +100,7 @@ statusProcess() {
 ## Help Process
 
 helpProcess() {
-  Display @hierarchy.mdc AiddgenCommands
+  Display @generator.mdc#AiddgenCommands
 }
 
 ## Output Density
@@ -131,7 +131,6 @@ Constraints {
   Generated core.mdc MUST include RTC thinking pattern.
   Commands MUST be thin - delegate to rule files.
   Never repeat the same concept across files.
-  Lists (L4Components, commands, etc.) defined once in hierarchy.mdc.
   Generate concrete spec patterns for detected stack.
   /help MUST list available spec patterns and agents.
 }

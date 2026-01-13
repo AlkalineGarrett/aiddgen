@@ -1,0 +1,55 @@
+---
+description: Supporting rules generation logic
+---
+
+# Rules Generation
+
+Generate supporting rules calibrated to lifecycle context.
+
+## Rules by Context
+
+AlwaysGenerateRules {
+  rules/task-creator.mdc => @guidance/task-lifecycle.mdc
+  rules/review.mdc => references all generated stack/pattern rules
+  rules/tdd.mdc => @guidance/testing-methodology.mdc
+}
+
+RulesByContext {
+  TeamTool+ => rules/log.mdc per @guidance/task-lifecycle.mdc#ActivityLogging
+  MVP+ => rules/productmanager.mdc per @guidance/product-management.mdc
+  BusinessRisk+ => rules/security.mdc per @guidance/security-patterns.mdc
+}
+
+## Generation Process
+
+generateSupportingRules(lifecycle, risk) {
+  For each in AlwaysGenerateRules => generate with L1-L2 calibration
+  (lifecycle >= TeamTool) => generate RulesByContext[TeamTool+]
+  (lifecycle >= MVP) => generate RulesByContext[MVP+]
+  (risk >= Business) => generate RulesByContext[BusinessRisk+]
+}
+
+## Core Rule Generation
+
+generateCore(choices) {
+  Generate rules/core.mdc with:
+    - RTC thinking pattern from @guidance/thinking-patterns.mdc
+    - Behaviors calibrated per L1 lifecycle
+    - Constraints derived from L2 params
+    - Principle levels from @guidance/programming-principles.mdc
+}
+
+## Review Rule Special Case
+
+generateReview(generatedRules) {
+  Scan all generated rules/
+  Build Criteria{} block referencing each
+  Include OWASP checks if BusinessRisk+
+  Reference security rules if generated
+}
+
+Constraints {
+  Calibrate rule strictness to lifecycle.
+  Reference guidance files, don't duplicate.
+  Review rule must reference all other generated rules.
+}

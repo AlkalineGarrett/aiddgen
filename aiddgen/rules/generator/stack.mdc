@@ -1,0 +1,71 @@
+---
+description: Stack detection and rule generation
+---
+
+# Stack Generation
+
+Detect stack components and generate corresponding rules.
+
+## L4 Components
+
+L4Components {
+  Framework
+  StateManagement
+  Database
+  TestRunner
+  Deployment
+  CICD
+}
+
+## Detection Process
+
+detectOrAskL3L5() {
+  (no source code) => askEcosystem |> recommendStack
+  (source code exists) => analyzeStack |> presentFindings |> confirm
+}
+
+analyzeStack() {
+  For each L4Component => detect from package files, config, imports
+  Default StateManagement if app has state needs
+}
+
+## Stack Rule Generation
+
+generateStackRules(confirmedStack) {
+  For each technology in confirmedStack:
+    Generate rules/stack/${tech}.mdc
+    Calibrate to L1-L2 context
+    Include framework-specific patterns
+}
+
+## Pattern Rule Generation
+
+generatePatterns(stack) {
+  Identify boilerplate for each L4Component:
+    Framework => component pattern
+    StateManagement => store pattern
+    Database => model pattern
+    Framework + API => api-route pattern
+
+  For each pattern:
+    Generate rules/patterns/${pattern}.mdc per @guidance/spec-driven-generation.mdc
+    Generate commands/${pattern}.md
+}
+
+## Effects Rule Generation
+
+generateEffectRules(stack) {
+  (async operations in stack) => generate rules/effects.mdc
+
+  EffectsPattern {
+    call(fn, ...args) => yield { CALL: { fn, args } }
+    put(action) => yield { PUT: action }
+    Benefits => pure functions, testable via iterator.next(), observable
+  }
+}
+
+Constraints {
+  One stack rule per technology.
+  Patterns derived from stack, not hardcoded.
+  Calibrate strictness to lifecycle.
+}

@@ -1,5 +1,5 @@
 ---
-description: Single source of truth for choice hierarchy and component lists
+description: Single source of truth for choice hierarchy
 alwaysApply: true
 ---
 
@@ -13,17 +13,8 @@ ChoiceLevels {
   L1_Lifecycle => PoC | Throwaway | TeamTool | MVP | EarlyProduction | MatureProduction | Legacy
   L2_Params => Risk, Team, Velocity, Scale
   L3_Ecosystem => language/runtime
-  L4_Stack => L4Components
+  L4_Stack => @generator/stack.mdc#L4Components
   L5_Libraries => specific packages within stack
-}
-
-L4Components {
-  Framework
-  StateManagement
-  Database
-  TestRunner
-  Deployment
-  CICD
 }
 
 ## Cascade Rules
@@ -53,25 +44,4 @@ AiddgenCommands {
   /aiddgen-add-rule => "Add custom rule"
   /aiddgen-status => "Show configuration"
   /aiddgen-help => "This help"
-}
-
-## Generated Commands by Context
-
-AlwaysIncludeCommands { /help, /plan, /task, /review, /commit, /explain, /debug }
-
-CommandsByContext {
-  TeamTool+ => /discover, /execute, /log
-  MVP+ => /feature, /journey
-  BusinessRisk+ => /security-review
-}
-
-## Output Files
-
-OutputFiles {
-  choices.mdc => source of truth (L1-L5 with explicit/inferred markers)
-  rules/core.mdc => derived from L1 + L2
-  rules/stack/*.mdc => derived from L3-L5, calibrated to L1 + L2
-  rules/patterns/*.mdc => spec-driven generation patterns
-  rules/effects.mdc => effect isolation (if async in stack)
-  rules/agent-orchestrator.mdc => agent dispatch (if multiple specialized rules)
 }

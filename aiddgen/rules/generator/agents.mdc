@@ -1,0 +1,81 @@
+---
+description: Agent orchestrator generation logic
+---
+
+# Agent Generation
+
+Generate agent-orchestrator.mdc to coordinate specialized agents.
+
+## Agent Triggers
+
+AgentTriggers {
+  stack => "implementing features using the tech stack"
+  patterns => "generating from spec (store, component, api-route, model)"
+  effects => "network requests or side-effects"
+  tdd => "implementing code changes"
+  review => "code review"
+  task => "task/epic planning"
+  productmanager => "product discovery, user stories, journeys"
+  security => "security concerns"
+  log => "documenting changes"
+}
+
+## Agent-Rule Mapping
+
+AgentRuleMapping {
+  stack => rules/stack/*.mdc
+  patterns => rules/patterns/*.mdc
+  effects => rules/effects.mdc
+  tdd => rules/tdd.mdc
+  review => rules/review.mdc
+  task => rules/task-creator.mdc
+  productmanager => rules/productmanager.mdc
+  security => rules/security.mdc
+  log => rules/log.mdc
+}
+
+## Generation Process
+
+generateAgentOrchestrator(generatedRules) {
+  Scan generatedRules => find matching AgentRuleMapping entries
+  For each match => add to Agents{} with trigger from AgentTriggers
+  Generate rules/agent-orchestrator.mdc with alwaysApply: true
+}
+
+## Output Template
+
+orchestratorTemplate() {
+  """
+  ---
+  description: Coordinate specialized agents
+  alwaysApply: true
+  ---
+
+  # Agent Orchestrator
+
+  Coordinate specialized agents in rules/**/*.mdc.
+
+  Agents {
+    ${for each detected agent}
+    ${name}: when ${AgentTriggers[name]}, use @${rulePath}
+  }
+
+  handleRequest() {
+    match (requestContext) {
+      multiple domains => compose prompt with relevant guides
+      single domain => dispatch to matching agent
+    }
+  }
+
+  Constraints {
+    Do ONE thing at a time, get approval before continuing.
+    Check agent orchestrator for unrecognized commands.
+  }
+  """
+}
+
+Constraints {
+  Only include agents for rules that exist.
+  Set alwaysApply: true on orchestrator.
+  Keep orchestrator thin - dispatch only.
+}
