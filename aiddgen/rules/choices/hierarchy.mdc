@@ -34,14 +34,3 @@ L2FromL1 {
   EarlyProduction => (Business, Multiple, Active, Users)
   MatureProduction => (Business+, Multiple, Measured, Organization)
 }
-
-## Aiddgen Commands
-
-AiddgenCommands {
-  /aiddgen-init => "Full setup: lifecycle + stack"
-  /aiddgen-stack => "Modify stack"
-  /aiddgen-add-command => "Add custom command"
-  /aiddgen-add-rule => "Add custom rule"
-  /aiddgen-status => "Show configuration"
-  /aiddgen-help => "This help"
-}
