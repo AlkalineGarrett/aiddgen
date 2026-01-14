@@ -1,0 +1,58 @@
+---
+description: Single source of truth for choice hierarchy
+alwaysApply: true
+---
+
+# Choice Hierarchy
+
+User choices form a hierarchy where higher levels inform lower-level defaults.
+
+ChoiceHierarchy {
+  L0_ProblemDomain
+  L1_Lifecycle => {
+    LifecycleStage: @lifecycle.mdc#LifecycleStages,
+    LifecycleParams {
+      RiskDomain: @risk-domain.mdc
+      TeamContext: @team-context.mdc
+      ChangeVelocity: @change-velocity.mdc
+      SystemScale: @scale.mdc
+    } || defaults: LifecycleParamsDefaults
+  }
+  L3_Architecture => #L3Architecture
+  L4_Ecosystem => language/runtime
+  L5_Stack => @generator/stack.mdc#L5Components
+  L6_Libraries => specific packages within stack
+}
+
+LifecycleParamsDefaults {
+  PoC | Throwaway => (Personal, Solo, Rapid, Local)
+  TeamTool => (Internal, Small, Active, Team)
+  MVP => (Business, Small, Active, Users)
+  EarlyProduction => (Business, Multiple, Active, Users)
+  MatureProduction => (Business+, Multiple, Measured, Organization)
+}
+
+L3Architecture {
+  UI/Front End {
+    WebUI => browser-based frontend
+    MobileUI => mobile app (iOS, android, hybrid)
+    DesktopUI => desktop application (Windows, Mac, multi-platform)
+  }
+  Programmatic Interface {
+    Network API => REST, GraphQL, or RPC endpoints
+    CLI => command-line interface tool
+    Library => reusable package/module
+  }
+  Back End {
+    Server => backend business logic
+    DAL => database access layer
+    Worker => background jobs, message queues
+    Realtime => WebSocket, SSE, live updates
+  }
+}
+
+CascadeRules {
+  Higher informs lower => Lifecycle shapes reasonable defaults
+  Explicit overrides inferred => user choice beats cascade
+  Record both => store explicit AND inferred separately
+}

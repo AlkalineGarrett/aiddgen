@@ -1,0 +1,54 @@
+---
+description: Stack detection
+---
+
+## L5 Stack Components
+
+L5Components {
+  Framework
+  StateManagement
+  Database
+  ORM
+  TestRunner
+  Deployment
+  CICD
+  APIFramework
+  RealtimeLib
+  QueueSystem
+}
+
+## Components by Layer
+
+ComponentsByLayer {
+  *all* => TestRunner
+  WebUI => Framework, StateManagement
+  MobileUI => Framework, StateManagement
+  DesktopUI => Framework, StateManagement
+  Server => Framework
+  API => Framework
+  CLI => Framework
+  Library => ...
+  DAL => Database, ORM
+  Worker => QueueSystem
+  Realtime => RealtimeLib
+}
+
+## Detection Process
+
+determineL5(ecosystem, layers) {
+  relevantComponents = flatten(layers.map(l => ComponentsByLayer[l]))
+  (no source code) => recommendStack(ecosystem, relevantComponents)
+  (source code exists) => analyzeStack |> presentFindings |> confirm
+}
+
+recommendStack(ecosystem, components) {
+  For each component in components:
+    Suggest default based on ecosystem
+    Present alternatives
+    Allow custom choice
+}
+
+analyzeStack() {
+  For each L5Component => detect from package files, config, imports
+  Default StateManagement if layers include UI
+}

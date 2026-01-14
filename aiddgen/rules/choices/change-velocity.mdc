@@ -8,7 +8,7 @@ How frequently code changes affects stability vs adaptability. Stable systems be
 
 ## Options
 
-VelocityLevels {
+ChangeVelocity {
   Stable => Rarely changes, mostly bug fixes
   SlowEvolution => Planned changes, quarterly features
   ActiveDevelopment => Regular features, weekly/biweekly releases

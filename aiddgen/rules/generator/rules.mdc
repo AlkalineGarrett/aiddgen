@@ -53,3 +53,49 @@ Constraints {
   Reference guidance files, don't duplicate.
   Review rule must reference all other generated rules.
 }
+
+## Stack Rule Generation
+
+generateStackRules(confirmedStack, layers) {
+  For each technology in confirmedStack:
+    Generate rules/stack/${tech}.mdc
+    Calibrate to L1-L2 context
+    Include layer-specific patterns
+}
+
+## Pattern Rule Generation
+
+generatePatterns(stack, layers) {
+  PatternsByLayer {
+    WebUI => component pattern
+    StateManagement => store pattern
+    DAL => model pattern
+    API => api-route pattern
+    CLI => command pattern
+  }
+
+  For each layer in layers:
+    (pattern exists for layer) => {
+      Generate rules/patterns/${pattern}.mdc per @guidance/spec-driven-generation.mdc
+      Generate commands/${pattern}.md
+    }
+}
+
+## Effects Rule Generation
+
+generateEffectRules(stack, layers) {
+  (layers include API | Server | Worker) => generate rules/effects.mdc
+
+  EffectsPattern {
+    call(fn, ...args) => yield { CALL: { fn, args } }
+    put(action) => yield { PUT: action }
+    Benefits => pure functions, testable via iterator.next(), observable
+  }
+}
+
+Constraints {
+  One stack rule per technology.
+  Only generate components relevant to selected layers.
+  Patterns derived from layers and stack, not hardcoded.
+  Calibrate strictness to lifecycle.
+}

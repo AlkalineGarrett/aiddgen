@@ -26,36 +26,57 @@ CRITICAL: Generate all output to OutputDir, NEVER to aiddgen/.
 ## Aiddgen Commands
 
 AiddgenCommands {
-  /aiddgen-init => "Full setup: lifecycle + stack"
-  /aiddgen-stack => "Modify stack"
-  /aiddgen-add-command => "Add custom command"
-  /aiddgen-add-rule => "Add custom rule"
-  /aiddgen-status => "Show configuration"
-  /aiddgen-help => "This help"
+  /aiddgen => {
+    "Full setup: lifecycle through stack"
+    ChooseAndGenerateAll()
+  }
+  /aiddgen-stack => {
+    "Update stack configuration"
+    ChooseAndGenerateStack()
+  }
+  /aiddgen-add-command => {
+    "Add custom command"
+    addCommandProcess()
+  }
+  /aiddgen-add-rule => {
+    "Add custom rule"
+    addRuleProcess()
+  }
+  /aiddgen-status => {
+    "Show configuration"
+    statusProcess()
+  }
+  /aiddgen-help => {
+    "This help"
+    Display @generator.mdc#AiddgenCommands
+  }
 }
 
-## Init Process
+## Generation Process
 
-initProcess() {
-  checkExisting |> gatherL1L2 |> generateAll
-}
-
-checkExisting() {
+chooseAndGenerateAll() {
   (OutputDir exists) => askUpdateOrFresh
+  for each choice hierarchy level in @choice-hierarchy.mdc#ChoiceHierarchy => {
+    (no recorded choice) => {
+      collectChoices |> recordChoices
+    }
+  }
+  generateAll
 }
 
-gatherL1L2() {
-  analyzeCodebase |> verifyWithUser |> askTarget |> suggestL2Defaults
+collectChoices(hierarchyLevel) {
+  for each choice needed in hierarchy level {
+    (existing code) => {
+      detect already-existing choice from existing codebase
+    }
+    research best-fit/alternative choices given hierarchy so far (regardless of detected choice)
+    present detected choice and best-fit/alternative choices to user
+    ask if user wants a presented choice or to override; can be single or multi-select, based on the situation
+  }
 }
 
-analyzeCodebase() {
-  (new/empty repo) => askProjectType
-  (existing code) => detectLifecycle from signals
-}
-
-suggestL2Defaults() {
-  Infer L2 from L1 per @hierarchy.mdc#L2FromL1
-  Mark each as explicit or inferred
+recordChoices(choices) {
+  record user choices in choices.mdc, marking each as explicit (user-chosen) or inferred
 }
 
 generateAll() {
@@ -69,38 +90,27 @@ generateAll() {
   |> @agents.mdc#generateAgentOrchestrator
 }
 
-## Stack Process
+chooseAndGenerateStack {
+  collectChoices(stack hierarchy level) |> recordChoices(stack hierarchy level)
+}
 
-stackProcess() {
-  @stack.mdc#detectOrAskL3L5
-  |> @stack.mdc#generateStackRules
+generateStack() {
+  @stack.mdc#generateStackRules
   |> @stack.mdc#generatePatterns
   |> @agents.mdc#generateAgentOrchestrator
 }
-
-## Add Command Process
 
 addCommandProcess() {
   askPurpose |> inferStructure |> confirm |> @commands.mdc#generateCommand
 }
 
-## Add Rule Process
-
 addRuleProcess() {
   askWhat |> askGuidance |> inferStructure |> generateRule
 }
 
-## Status Process
-
 statusProcess() {
-  (no choices.mdc) => "Run /aiddgen-init first"
+  (no choices.mdc) => "Run /aiddgen first"
   (choices.mdc exists) => displayChoices |> listGenerated
-}
-
-## Help Process
-
-helpProcess() {
-  Display @generator.mdc#AiddgenCommands
 }
 
 ## Output Density
