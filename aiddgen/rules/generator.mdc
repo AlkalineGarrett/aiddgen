@@ -64,11 +64,22 @@ chooseAndGenerateAll() {
 }
 
 collectChoices(hierarchyLevel) {
+  determine each choice needed in hierarchy level {
+    omit choices if problem space obviously doesn't need it {
+      example: if the user is building a fully-offline game, remote storage is not necessary
+    }
+    add choices if problem space requires unforeseen choices {
+      example: if the user needs to make LLM calls, determine what choices are necessary
+    }
+  }
   for each choice needed in hierarchy level {
     (existing code) => {
       detect already-existing choice from existing codebase
     }
-    research best-fit/alternative choices given hierarchy so far (regardless of detected choice)
+    research best-fit/alternative choices given hierarchy so far (regardless of detected choice) {
+      prefer choices recommended by experts
+      weight by recency and popularity (these will have better community support, documentation, more up to date security)
+    }
     present detected choice and best-fit/alternative choices to user
     ask if user wants a presented choice or to override; can be single or multi-select, based on the situation
   }
