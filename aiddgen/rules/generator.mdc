@@ -17,7 +17,6 @@ CRITICAL: Generate all output to OutputDir, NEVER to aiddgen/.
 
 @aiddgen/reference/sudolang-style.mdc
 @aiddgen/rules/choices/choice-hierarchy.mdc
-@aiddgen/rules/choices/stack.mdc
 @aiddgen/rules/generator/commands.mdc
 @aiddgen/rules/generator/rules.mdc
 @aiddgen/rules/generator/agents.mdc

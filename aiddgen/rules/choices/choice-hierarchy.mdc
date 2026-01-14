@@ -1,15 +1,15 @@
 ---
-description: Single source of truth for choice hierarchy
+description: Choice hierarchy
 alwaysApply: true
 ---
-
-# Choice Hierarchy
 
 User choices form a hierarchy where higher levels inform lower-level defaults.
 
 ChoiceHierarchy {
-  L0_ProblemDomain
-  L1_Lifecycle => {
+  L1_ProblemDomain => {
+    UserPrompt: "What problem domain are you working in, or what problem do you want to solve with software?"
+  }
+  L2_Lifecycle => {
     LifecycleStage: @lifecycle.mdc#LifecycleStages,
     LifecycleParams {
       RiskDomain: @risk-domain.mdc
@@ -18,10 +18,9 @@ ChoiceHierarchy {
       SystemScale: @system-scale.mdc
     } || defaults: LifecycleParamsDefaults
   }
-  L3_Architecture => #L3Architecture
+  L3_Architecture => @architecture.mdc
   L4_Ecosystem => language/runtime
-  L5_Stack => @stack.mdc#L5Components
-  L6_Libraries => specific packages within stack
+  L5_TechStack => @tech-stack.mdc
 }
 
 LifecycleParamsDefaults {
@@ -30,25 +29,6 @@ LifecycleParamsDefaults {
   MVP => (Business, Small, Active, Users)
   EarlyProduction => (Business, Multiple, Active, Users)
   MatureProduction => (Business+, Multiple, Measured, Organization)
-}
-
-L3Architecture {
-  UI/Front End {
-    WebUI => browser-based frontend
-    MobileUI => mobile app (iOS, android, hybrid)
-    DesktopUI => desktop application (Windows, Mac, multi-platform)
-  }
-  Programmatic Interface {
-    Network API => REST, GraphQL, or RPC endpoints
-    CLI => command-line interface tool
-    Library => reusable package/module
-  }
-  Back End {
-    Server => backend business logic
-    DAL => database access layer
-    Worker => background jobs, message queues
-    Realtime => WebSocket, SSE, live updates
-  }
 }
 
 CascadeRules {

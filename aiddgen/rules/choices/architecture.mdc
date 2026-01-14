@@ -1,0 +1,22 @@
+---
+description: Architecture choice
+---
+
+ArchitectureComponents {
+  UI/Front End {
+    WebUI => browser-based frontend
+    MobileUI => mobile app (iOS, android, hybrid)
+    DesktopUI => desktop application (Windows, Mac, multi-platform)
+  }
+  Programmatic Interface {
+    Network API => REST, GraphQL, or RPC endpoints
+    CLI => command-line interface tool
+    Library => reusable package/module
+  }
+  Back End {
+    Server => backend business logic
+    DAL => database access layer
+    Worker => background jobs, message queues
+    Realtime => WebSocket, SSE, live updates
+  }
+}

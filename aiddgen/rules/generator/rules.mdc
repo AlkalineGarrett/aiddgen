@@ -34,8 +34,8 @@ generateSupportingRules(lifecycle, risk) {
 generateCore(choices) {
   Generate rules/core.mdc with:
     - RTC thinking pattern from @guidance/thinking-patterns.mdc
-    - Behaviors calibrated per L1 lifecycle
-    - Constraints derived from L2 params
+    - Behaviors calibrated per L2 lifecycle
+    - Constraints derived from L2 LifecycleParams
     - Principle levels from @guidance/programming-principles.mdc
 }
 
