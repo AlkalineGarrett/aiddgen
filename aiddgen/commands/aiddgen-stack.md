@@ -4,4 +4,4 @@ description: Configure technology stack
 
 # /aiddgen-stack
 
-@aiddgen/rules/generator.mdc#stackProcess
+@aiddgen/rules/generator.mdc#chooseAndGenerateStack

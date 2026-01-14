@@ -16,11 +16,11 @@ CRITICAL: Generate all output to OutputDir, NEVER to aiddgen/.
 ## References
 
 @aiddgen/reference/sudolang-style.mdc
-@aiddgen/rules/choices/hierarchy.mdc
+@aiddgen/rules/choices/choice-hierarchy.mdc
+@aiddgen/rules/choices/stack.mdc
 @aiddgen/rules/generator/commands.mdc
 @aiddgen/rules/generator/rules.mdc
 @aiddgen/rules/generator/agents.mdc
-@aiddgen/rules/generator/stack.mdc
 @aiddgen/rules/guidance/*.mdc
 
 ## Aiddgen Commands
@@ -28,11 +28,11 @@ CRITICAL: Generate all output to OutputDir, NEVER to aiddgen/.
 AiddgenCommands {
   /aiddgen => {
     "Full setup: lifecycle through stack"
-    ChooseAndGenerateAll()
+    chooseAndGenerateAll()
   }
   /aiddgen-stack => {
     "Update stack configuration"
-    ChooseAndGenerateStack()
+    chooseAndGenerateStack()
   }
   /aiddgen-add-command => {
     "Add custom command"
@@ -48,7 +48,7 @@ AiddgenCommands {
   }
   /aiddgen-help => {
     "This help"
-    Display @generator.mdc#AiddgenCommands
+    showHelp()
   }
 }
 
@@ -82,9 +82,9 @@ recordChoices(choices) {
 generateAll() {
   generateChoices
   |> @rules.mdc#generateCore
-  |> @stack.mdc#generateStackRules
-  |> @stack.mdc#generatePatterns
-  |> @stack.mdc#generateEffectRules
+  |> @rules.mdc#generateStackRules
+  |> @rules.mdc#generatePatterns
+  |> @rules.mdc#generateEffectRules
   |> @rules.mdc#generateSupportingRules
   |> @commands.mdc#generateCommands
   |> @agents.mdc#generateAgentOrchestrator
@@ -95,8 +95,8 @@ chooseAndGenerateStack {
 }
 
 generateStack() {
-  @stack.mdc#generateStackRules
-  |> @stack.mdc#generatePatterns
+  @rules.mdc#generateStackRules
+  |> @rules.mdc#generatePatterns
   |> @agents.mdc#generateAgentOrchestrator
 }
 
@@ -111,6 +111,10 @@ addRuleProcess() {
 statusProcess() {
   (no choices.mdc) => "Run /aiddgen first"
   (choices.mdc exists) => displayChoices |> listGenerated
+}
+
+showHelp() {
+  Display @generator.mdc#AiddgenCommands
 }
 
 ## Output Density

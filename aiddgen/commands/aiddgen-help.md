@@ -4,4 +4,4 @@ description: List aiddgen commands
 
 # /aiddgen-help
 
-@aiddgen/rules/generator.mdc#helpProcess
+@aiddgen/rules/generator.mdc#showHelp

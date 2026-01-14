@@ -15,12 +15,12 @@ ChoiceHierarchy {
       RiskDomain: @risk-domain.mdc
       TeamContext: @team-context.mdc
       ChangeVelocity: @change-velocity.mdc
-      SystemScale: @scale.mdc
+      SystemScale: @system-scale.mdc
     } || defaults: LifecycleParamsDefaults
   }
   L3_Architecture => #L3Architecture
   L4_Ecosystem => language/runtime
-  L5_Stack => @generator/stack.mdc#L5Components
+  L5_Stack => @stack.mdc#L5Components
   L6_Libraries => specific packages within stack
 }
 
