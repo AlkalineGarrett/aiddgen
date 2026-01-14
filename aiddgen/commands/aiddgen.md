@@ -2,6 +2,6 @@
 description: Initialize AI command system
 ---
 
-# /aiddgen-init
+# /aiddgen
 
 @aiddgen/rules/generator.mdc#chooseAndGenerateAll
